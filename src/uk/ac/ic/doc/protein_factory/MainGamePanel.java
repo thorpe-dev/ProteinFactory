@@ -5,8 +5,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.DisplayMetrics;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.view.Display;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -34,11 +36,13 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
     {
         super(c);
 
-        dnaArray = new DNA[1 << 5];
+        Random gen = new Random();
+
+        dnaArray = new DNA[15];
 
         for (int i = 0; i < dnaArray.length; i++)
         {
-            dnaArray[i] = new DNA(BitmapFactory.decodeResource(getResources(), uk.ac.ic.doc.protein_factory.R.drawable.helix),240, 200);
+            dnaArray[i] = new DNA(BitmapFactory.decodeResource(getResources(), uk.ac.ic.doc.protein_factory.R.drawable.helix),gen.nextInt(200) + 50,gen.nextInt(350) + 100);
         }
         header = new Header(BitmapFactory.decodeResource(getResources(), uk.ac.ic.doc.protein_factory.R.drawable.header ),0,0);
 
