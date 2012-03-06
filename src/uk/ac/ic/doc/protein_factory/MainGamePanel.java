@@ -11,14 +11,17 @@ import android.util.Log;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.util.Stack;
 
 public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 {
-    private MainThread thread;
-    private List<RNANucleotide> rnaNucleotides = new LinkedList<RNANucleotide>(); 
+    private MainThread mainThread;
+    private ShiftThread shiftThread;
+    private List<RNANucleotide> rnaNucleotides = new LinkedList<RNANucleotide>();
+    private Stack<RNANucleotide> unusedNucleotides = new Stack<RNANucleotide>();
     private static final String TAG = MainGamePanel.class.getSimpleName();
     private static final int rnaCount = 20;
-    
+
     public MainGamePanel(Context c)
     {
         super(c);
@@ -29,7 +32,8 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
             rnaNucleotides.add(new RNANucleotide(c, gen));
 
         getHolder().addCallback(this);
-        thread = new MainThread(getHolder(),this);
+        mainThread = new MainThread(getHolder(),this);
+        shiftThread = new ShiftThread(getHolder(),this);
         setFocusable(true);
     }
 
@@ -42,8 +46,11 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
     @Override
     public void surfaceCreated(SurfaceHolder h)
     {
-        thread.setRunning(true);
-        thread.start();
+        mainThread.setRunning(true);
+        mainThread.start();
+        shiftThread.setRunning(true);
+        shiftThread.start();
+
     }
 
     @Override
@@ -51,16 +58,17 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
     {
         Log.d(TAG,"Surface being destroyed");
 
-        thread.setRunning(false);
+        mainThread.setRunning(false);
+        shiftThread.setRunning(false);
         ((Activity)getContext()).finish();
-        
+
         // Not Reached?
         boolean retry = true;
         while (retry)
         {
             try
             {
-                thread.join();
+                mainThread.join();
                 retry = false;
             }
             catch (InterruptedException e)
@@ -68,6 +76,20 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
                 // try shutting the thread down again
             }
         }
+        retry = true;
+        while (retry)
+        {
+            try
+            {
+                shiftThread.join();
+                retry = false;
+            }
+            catch (InterruptedException e)
+            {
+                // try shutting the thread down again
+            }
+        }
+
         Log.d(TAG,"Thread has been shut down cleanly");
     }
 
@@ -79,7 +101,7 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
             for (RNANucleotide rna : rnaNucleotides)
                 rna.actionDown((int)e.getX(),(int)e.getY());
 
-                Log.d(TAG,"Coords: x=" + e.getX() + ",y=" + e.getY());
+            Log.d(TAG,"Coords: x=" + e.getX() + ",y=" + e.getY());
         }
         if (e.getAction() == MotionEvent.ACTION_MOVE)
         {
@@ -96,7 +118,7 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
         if (e.getAction() == MotionEvent.ACTION_UP)
         {
             for (RNANucleotide rna : rnaNucleotides)
-            	rna.setTouched(false);
+                rna.setTouched(false);
         }
         return true;
     }
@@ -108,24 +130,45 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
         canvas.drawColor(Color.GREEN);
         for (RNANucleotide rna : rnaNucleotides)
         {
-/*            if (!rna.isInHeader())
+            if (!rna.isTouched())
             {
-                if (rna.getX() < (header.getX() - header.getBitmap().getWidth())
-                        || rna.getY() < (header.getY() - header.getBitmap().getHeight()))
+                rna.setX(rna.getX() + generator.nextInt(3) - 1);
+                rna.setY(rna.getY() + generator.nextInt(3) - 1);
+                rna.draw(canvas);
+            }
+            else
+            {
+                rna.draw(canvas);
+            }
+        }
+    }
+
+    protected void onShift(Canvas canvas)
+    {
+        canvas.drawColor(Color.GREEN);
+        boolean updated = false;
+
+        for (RNANucleotide rna : rnaNucleotides)
+        {
+            if (!rna.isTouched())
+            {
+                rna.setX(rna.getX() + 5);
+                if (rna.getX() > getWidth())
                 {
-                    rna.setInHeader(true);
+                    unusedNucleotides.push(rna);
+                    updated = true;
+                    Log.d(TAG,"Put a nucleotide on the stack");
                 }
-                else */if (!rna.isTouched())
-                {
-                    rna.setX(rna.getX() + generator.nextInt(3) - 1);
-                    rna.setY(rna.getY() + generator.nextInt(3) - 1);
-                    rna.draw(canvas);
-                }
-                else
-                {
-                    rna.draw(canvas);
-                }
-//            }
+            }
+            rna.draw(canvas);
+        }
+
+        if (updated)
+        {
+            for (RNANucleotide rna : unusedNucleotides)
+            {
+                rnaNucleotides.remove(rna);
+            }
         }
     }
 }
