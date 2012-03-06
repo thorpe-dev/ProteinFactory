@@ -3,6 +3,8 @@ package uk.ac.ic.doc.protein_factory;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
+import java.util.logging.XMLFormatter;
+
 /**
  * Created by IntelliJ IDEA.
  * User: Michael
@@ -32,8 +34,6 @@ public class DNA {
         this.bitmap = b;
         this.x = x;
         this.y = y;
-        this.inHeader = false;
-        this.touched = false;
     }
 
     public Bitmap getBitmap() { return bitmap; }

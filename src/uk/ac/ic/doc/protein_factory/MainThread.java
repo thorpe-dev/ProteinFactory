@@ -3,6 +3,7 @@ package uk.ac.ic.doc.protein_factory;
 import android.graphics.Canvas;
 import android.view.SurfaceHolder;
 import android.util.Log;
+import android.os.SystemClock;
 
 
 /**
@@ -20,50 +21,44 @@ public class MainThread extends Thread {
     private SurfaceHolder holder;
     private MainGamePanel panel;
     private static final String TAG = MainThread.class.getSimpleName();
+    private static final long LOOPTIME = 40; //ms
 
     public void setRunning(boolean running) {this.running = running;}
 
-    public MainThread(SurfaceHolder h, MainGamePanel p)
-    {
+    public MainThread(SurfaceHolder h, MainGamePanel p) {
         super();
         this.holder = h;
         this.panel = p;
     }
 
     @Override
-    public void run()
-    {
+    public void run() {
         Log.d(TAG,"Starting MainThread");
         Canvas canvas;
-        long count = 0;
-        while (running)
-        {
+        while (running) {
+        	long startTime = SystemClock.uptimeMillis();
+        	
             // Update game state and render this state to the screen
-            Log.d(TAG,"Counts = " + count);
             canvas = null;
-            count++;
-            try
-            {
+            try {
                 canvas = this.holder.lockCanvas();
-                synchronized (holder)
-                {
+                synchronized (holder) {
                     this.panel.onDraw(canvas);
 
-                    try
-                    {
-                        Thread.sleep(1);
+                    try {
+                        Log.d(TAG,"Loop took " + (SystemClock.uptimeMillis()-startTime) + "ms");
+                    	long timeToSleep = LOOPTIME-(SystemClock.uptimeMillis()-startTime);
+                    	if(timeToSleep > 0)
+                    		Thread.sleep(timeToSleep);
                     }
                     catch (InterruptedException iex) { }
                 }
             }
-            finally
-            {
+            finally {
                 if (canvas != null)
-                {
                     holder.unlockCanvasAndPost(canvas);
-                }
             }
         }
-        Log.d(TAG,"Game loop exceeded limits, tick count " + count + "\n");
+        Log.d(TAG,"Game loop exceeded limits");
     }
 }
