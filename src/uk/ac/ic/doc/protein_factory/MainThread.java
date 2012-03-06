@@ -21,7 +21,7 @@ public class MainThread extends Thread {
     private SurfaceHolder holder;
     private MainGamePanel panel;
     private static final String TAG = MainThread.class.getSimpleName();
-    private static final long LOOPTIME = 40; //ms
+    private static final long LOOPTIME = 20; //ms
 
     public void setRunning(boolean running) {this.running = running;}
 
