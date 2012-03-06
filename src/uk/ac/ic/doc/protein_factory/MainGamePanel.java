@@ -1,14 +1,10 @@
 package uk.ac.ic.doc.protein_factory;
 
-import android.R;
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.DisplayMetrics;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.view.Display;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -137,13 +133,24 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
         header.draw(canvas);
         for (int i = 0; i < dnaArray.length; i++)
         {
-            if (!dnaArray[i].isTouched())
+            if (!dnaArray[i].isInHeader())
             {
-                dnaArray[i].setX(dnaArray[i].getX() + generator.nextInt(3) - 1);
-                dnaArray[i].setY(dnaArray[i].getY() + generator.nextInt(3) - 1);
-
+                if (dnaArray[i].getX() < (header.getX() - header.getBitmap().getWidth())
+                        || dnaArray[i].getY() < (header.getY() - header.getBitmap().getHeight()))
+                {
+                    dnaArray[i].setInHeader(true);
+                }
+                else if (!dnaArray[i].isTouched())
+                {
+                    dnaArray[i].setX(dnaArray[i].getX() + generator.nextInt(3) - 1);
+                    dnaArray[i].setY(dnaArray[i].getY() + generator.nextInt(3) - 1);
+                    dnaArray[i].draw(canvas);
+                }
+                else
+                {
+                    dnaArray[i].draw(canvas);
+                }
             }
-            dnaArray[i].draw(canvas);
         }
     }
 }

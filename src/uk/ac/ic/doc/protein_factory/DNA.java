@@ -3,8 +3,6 @@ package uk.ac.ic.doc.protein_factory;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
-import java.util.logging.XMLFormatter;
-
 /**
  * Created by IntelliJ IDEA.
  * User: Michael
@@ -19,11 +17,23 @@ public class DNA {
     private int y; // X and Y Co-ordinates of the image
     private boolean touched; // if the dna has been touched
 
+    public boolean isInHeader() {
+        return inHeader;
+    }
+
+    public void setInHeader(boolean inHeader) {
+        this.inHeader = inHeader;
+    }
+
+    private boolean inHeader;
+
     public DNA (Bitmap b, int x, int y)
     {
         this.bitmap = b;
         this.x = x;
         this.y = y;
+        this.inHeader = false;
+        this.touched = false;
     }
 
     public Bitmap getBitmap() { return bitmap; }
