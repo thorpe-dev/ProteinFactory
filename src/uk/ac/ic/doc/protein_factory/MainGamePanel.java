@@ -108,13 +108,24 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
         canvas.drawColor(Color.GREEN);
         for (RNANucleotide rna : rnaNucleotides)
         {
-            if (!rna.isTouched())
+/*            if (!rna.isInHeader())
             {
-                rna.setX(rna.getX() + generator.nextInt(3) - 1);
-                rna.setY(rna.getY() + generator.nextInt(3) - 1);
-
-            }
-            rna.draw(canvas);
+                if (rna.getX() < (header.getX() - header.getBitmap().getWidth())
+                        || rna.getY() < (header.getY() - header.getBitmap().getHeight()))
+                {
+                    rna.setInHeader(true);
+                }
+                else */if (!rna.isTouched())
+                {
+                    rna.setX(rna.getX() + generator.nextInt(3) - 1);
+                    rna.setY(rna.getY() + generator.nextInt(3) - 1);
+                    rna.draw(canvas);
+                }
+                else
+                {
+                    rna.draw(canvas);
+                }
+//            }
         }
     }
 }
