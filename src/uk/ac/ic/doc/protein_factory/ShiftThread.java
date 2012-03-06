@@ -15,15 +15,10 @@ import android.view.SurfaceHolder;
  */
 public class ShiftThread extends UIThread {
 
-    // Some flags to hold game state
-
-    private static final String TAG = ShiftThread.class.getSimpleName();
-
-    public void setRunning(boolean running) {this.running = running;}
-
     public ShiftThread(SurfaceHolder h, MainGamePanel p) {
         super(h,p);
         this.LOOPTIME = 100;
+        this.TAG = ShiftThread.class.getSimpleName();
     }
 
 
@@ -31,5 +26,14 @@ public class ShiftThread extends UIThread {
     protected void method(Canvas canvas)
     {
         this.panel.onShift(canvas);
+    }
+
+    @Override
+    protected void sleepMethod (long startTime) throws InterruptedException
+    {
+        Log.d(TAG,"Loop took " + (SystemClock.uptimeMillis()-startTime) + "ms, was supposed to take " + LOOPTIME);
+        long timeToSleep = this.LOOPTIME-(SystemClock.uptimeMillis()-startTime);
+        if(timeToSleep > 0)
+            Thread.sleep(timeToSleep);
     }
 }

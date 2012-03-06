@@ -20,7 +20,7 @@ public abstract class UIThread extends Thread{
     protected SurfaceHolder holder;
     protected MainGamePanel panel;
     protected long LOOPTIME;
-    private static final String TAG = UIThread.class.getSimpleName();
+    protected String TAG = UIThread.class.getSimpleName();
 
     public void setRunning(boolean running) { this.running = running; }
 
@@ -28,6 +28,7 @@ public abstract class UIThread extends Thread{
     {
         this.holder = h;
         this.panel = p;
+        this.LOOPTIME = 1000;
     }
 
     @Override
@@ -46,7 +47,7 @@ public abstract class UIThread extends Thread{
 
                     try {
                         Log.d(TAG,"Loop took " + (SystemClock.uptimeMillis()-startTime) + "ms");
-                        long timeToSleep = LOOPTIME-(SystemClock.uptimeMillis()-startTime);
+                        long timeToSleep = this.LOOPTIME-(SystemClock.uptimeMillis()-startTime);
                         if(timeToSleep > 0)
                             Thread.sleep(timeToSleep);
                     }
@@ -61,5 +62,6 @@ public abstract class UIThread extends Thread{
         Log.d(TAG,"Game loop exceeded limits");
     }
 
-    protected void method(Canvas canvas) {    }
+    protected void method(Canvas canvas) {  }
+    protected void sleepMethod(long startTime) throws InterruptedException {  }
 }

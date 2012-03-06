@@ -16,16 +16,24 @@ import android.os.SystemClock;
 public class MainThread extends UIThread {
 
 
-    private static final String TAG = MainThread.class.getSimpleName();
-
     public MainThread(SurfaceHolder h, MainGamePanel p) {
         super(h,p);
         this.LOOPTIME = 20;
+        this.TAG = MainThread.class.getSimpleName();
     }
 
     @Override
     protected void method(Canvas canvas)
     {
         this.panel.onDraw(canvas);
+    }
+
+    @Override
+    protected void sleepMethod (long startTime) throws InterruptedException
+    {
+        Log.d(TAG,"Loop took " + (SystemClock.uptimeMillis()-startTime) + "ms");
+        long timeToSleep = this.LOOPTIME-(SystemClock.uptimeMillis()-startTime);
+        if(timeToSleep > 0)
+            Thread.sleep(timeToSleep);
     }
 }
