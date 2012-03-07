@@ -12,11 +12,6 @@ public class DNANucleotide extends Nucleotide {
     private static final String TAG = RNANucleotide.class.getSimpleName();
     private int default_ = R.drawable.a_backbone_green;
 
-    public char getType() {
-        return type;
-    }
-
-    private char type;
     private boolean snapped = false;
 
 	public DNANucleotide(Context c, Game g, Random gen,int i) {
