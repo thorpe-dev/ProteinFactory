@@ -10,14 +10,40 @@ import android.util.Log;
 public class RNANucleotide extends Nucleotide {
     private boolean touched; // if the dna has been touched
     private static final String TAG = RNANucleotide.class.getSimpleName();
+    private char type;
     private int default_ = R.drawable.a_green;
     
 	public RNANucleotide(Context c, Random gen) {
         this.x = gen.nextInt(350) + 50;
         this.y = gen.nextInt(200) + 100;
-        this.bitmap = BitmapFactory.decodeResource(c.getResources(), generateNucleotide(R.drawable.class, randomType(gen), randomColor(gen)));
+        this.type = randomType(gen);
+        this.bitmap = BitmapFactory.decodeResource(c.getResources(), generateNucleotide(R.drawable.class, this.type, randomColor(gen)));
+	}
+    
+    public RNANucleotide(Context c,Random gen, char type)
+    {
+        this.x = gen.nextInt(350) + 50;
+        this.y = gen.nextInt(200) + 100;
+        this.type = type;
+        this.bitmap = BitmapFactory.decodeResource(c.getResources(),generateNucleotide(R.drawable.class,type, randomColor(gen)));
+    }
+	
+	public void wobble(Random gen) {
+        x += gen.nextInt(3) - 2; // Bias to move left
+        y += gen.nextInt(3) - 1;
 	}
 
+	public void move(int x, int y) {
+		this.x  = x;
+		this.y = y;
+	}
+	
+	public int sqDist(int x, int y) {
+		int distX = this.x - x;
+        int distY = this.y - y;
+        return ((distX * distX) + (distY * distY));
+	}
+	
     protected char randomType(Random gen)
     {
         switch (gen.nextInt(4))

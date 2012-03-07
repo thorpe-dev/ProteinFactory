@@ -1,6 +1,8 @@
 package uk.ac.ic.doc.protein_factory;
 
 import android.graphics.Canvas;
+import android.os.SystemClock;
+import android.util.Log;
 import android.view.SurfaceHolder;
 
 
@@ -11,18 +13,51 @@ import android.view.SurfaceHolder;
  * Time: 17:05
  * To change this template use File | Settings | File Templates.
  */
-public class MainThread extends UIThread {
+public class MainThread extends Thread {
+	private static final int LOOPTIME = 20; // Nominal (minimum) loop time in ms
+	private static final String TAG = MainThread.class.getSimpleName();
+    protected boolean running;
+    protected SurfaceHolder holder;
+    protected MainGamePanel panel;
+    private Game game;
 
-
-    public MainThread(SurfaceHolder h, MainGamePanel p) {
-        super(h,p);
-        this.LOOPTIME = 5   ;
-        this.TAG = MainThread.class.getSimpleName();
+    public MainThread(SurfaceHolder h, MainGamePanel p, Game g) {
+        this.holder = h;
+        this.panel = p;
+        this.game = g;
     }
+    
+    public void setRunning(boolean running) { this.running = running; }
 
     @Override
-    protected void method(Canvas canvas)
-    {
-        this.panel.onDraw(canvas);
+    public void run() {
+        Canvas canvas;
+        while (running) {
+            long startTime = SystemClock.uptimeMillis();
+
+            // Update game state and render this state to the screen
+            canvas = null;
+            try {
+                canvas = holder.lockCanvas();
+                if(canvas != null) {
+	                synchronized (holder) {
+	                    this.game.physics();
+	                    this.game.drawToCanvas(canvas);
+	                    long thisLoopDuration = SystemClock.uptimeMillis()-startTime;
+	                    Log.d(TAG,"Loop took " + thisLoopDuration + "ms");
+	                    long timeToSleep = LOOPTIME-thisLoopDuration;
+	                    if(timeToSleep > 0) {
+	                    	try { Thread.sleep(timeToSleep); }
+	                    	catch (InterruptedException iex) {/* Do we need to do anything here? */ }
+	                    }
+	                }
+                }
+            }
+            finally {
+                if (canvas != null)
+                    holder.unlockCanvasAndPost(canvas);
+            }
+        }
+        Log.d(TAG,"Game loop exceeded limits");
     }
 }
