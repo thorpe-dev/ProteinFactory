@@ -15,7 +15,7 @@ public class ShiftThread extends UIThread {
 
     public ShiftThread(SurfaceHolder h, MainGamePanel p) {
         super(h,p);
-        this.LOOPTIME = 100;
+        this.LOOPTIME = 10;
         this.TAG = ShiftThread.class.getSimpleName();
     }
 

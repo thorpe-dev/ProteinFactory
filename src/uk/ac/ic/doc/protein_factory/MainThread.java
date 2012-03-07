@@ -16,7 +16,7 @@ public class MainThread extends UIThread {
 
     public MainThread(SurfaceHolder h, MainGamePanel p) {
         super(h,p);
-        this.LOOPTIME = 20;
+        this.LOOPTIME = 5   ;
         this.TAG = MainThread.class.getSimpleName();
     }
 
