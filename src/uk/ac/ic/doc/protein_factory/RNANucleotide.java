@@ -10,6 +10,7 @@ import android.util.Log;
 public class RNANucleotide extends Nucleotide {
     private boolean touched; // if the dna has been touched
     private static final String TAG = RNANucleotide.class.getSimpleName();
+    private int default_ = R.drawable.a_green;
     
 	public RNANucleotide(Context c, Random gen) {
         this.x = gen.nextInt(350) + 50;
@@ -49,15 +50,16 @@ public class RNANucleotide extends Nucleotide {
 
     protected int generateNucleotide(Class<?> c, char type, String color)
     {
-        int val = 0;
         try
         {
             final Field field = c.getDeclaredField(type + "_" + color);
-            val = field.getInt(null);
-            Log.d(TAG,"Value = " + val);
+            return field.getInt(null);
         }
-        catch (Exception e) { Log.d(TAG,"Exception message is: " + e.getMessage());  }
-        return val;
+        catch (Exception e) 
+        { 
+            Log.d(TAG,"Exception message is: " + e.getMessage());
+            return default_;
+        }
     }
 
     public boolean isTouched() { return this.touched;}

@@ -10,6 +10,7 @@ import android.util.Log;
 public class DNANucleotide extends Nucleotide {
 
     private static final String TAG = RNANucleotide.class.getSimpleName();
+    private int default_ = R.drawable.a_backbone_green;
 
 	public DNANucleotide(Context c, Random gen,int i) {
         this.bitmap = BitmapFactory.decodeResource(c.getResources(), generateNucleotide(R.drawable.class, randomType(gen), randomColor(gen)));
@@ -49,14 +50,15 @@ public class DNANucleotide extends Nucleotide {
 
     protected int generateNucleotide(Class<?> c, char type, String color)
     {
-        int val = 0;
         try
         {
             final Field field = c.getDeclaredField(type + "_backbone_" + color);
-            val = field.getInt(null);
-            Log.d(TAG, "Value = " + val);
+            return field.getInt(null);
         }
-        catch (Exception e) { Log.d(TAG,"Exception message is: " + e.getMessage());  }
-        return val;
+        catch (Exception e) 
+        { 
+            Log.d(TAG,"Exception message is: " + e.getMessage()); 
+            return default_;
+        }
     }
 }
