@@ -140,7 +140,7 @@ public class Game {
 	
     private void attemptAttachToBackBone(RNANucleotide rna) {
     	DNANucleotide nearest = (DNANucleotide) closestNucleotide(rna.getX(), rna.getY()-SNAP_OFFSET, SNAP_ACCURACY, backboneDNA);
-    	if(nearest != null)
+    	if(nearest != null && !nearest.snapped())
     		rna.snap(nearest, SNAP_OFFSET);
     }
 
@@ -152,9 +152,9 @@ public class Game {
         {
             int count = gen.nextInt(2) + 1;
             dna = new DNANucleotide(c,this,gen, i);
-            if (!already_exists(dna.getType()))
+            if (!already_exists(dna.type()))
             {
-                 rna = new RNANucleotide(c,this,gen,dna.getType(),displayWidth());
+                 rna = new RNANucleotide(c,this,gen,dna.type(),displayWidth());
             }
             else
             {
@@ -164,7 +164,7 @@ public class Game {
             floatingRNA.add(rna);
 
             // Add an extra bit of RNA
-            floatingRNA.add(new RNANucleotide(c,this,gen,dna.getType(),displayWidth()));
+            floatingRNA.add(new RNANucleotide(c,this,gen,dna.type(),displayWidth()));
         }
     }
 
@@ -189,7 +189,7 @@ public class Game {
         }
         for (RNANucleotide rna : floatingRNA)
         {
-            if (rna.getType() == rna_type)
+            if (rna.type() == rna_type)
                 return true;
         }
         return false;

@@ -10,11 +10,6 @@ import android.util.Log;
 public class RNANucleotide extends Nucleotide {
     private static final String TAG = RNANucleotide.class.getSimpleName();
 
-    public char getType() {
-        return type;
-    }
-
-    private char type;
     private int default_ = R.drawable.a_green;
     private boolean touched = false;
     private DNANucleotide snapped = null;
