@@ -19,17 +19,18 @@ public class MainThread extends Thread {
     protected boolean running;
     protected SurfaceHolder holder;
     protected MainGamePanel panel;
+    private Game game;
 
-    public MainThread(SurfaceHolder h, MainGamePanel p) {
+    public MainThread(SurfaceHolder h, MainGamePanel p, Game g) {
         this.holder = h;
         this.panel = p;
+        this.game = g;
     }
     
     public void setRunning(boolean running) { this.running = running; }
 
     @Override
     public void run() {
-        Log.d(TAG,"Starting ShiftThread");
         Canvas canvas;
         while (running) {
             long startTime = SystemClock.uptimeMillis();
@@ -37,18 +38,19 @@ public class MainThread extends Thread {
             // Update game state and render this state to the screen
             canvas = null;
             try {
-                canvas = this.holder.lockCanvas();
-                synchronized (holder) {
-                    this.panel.onDraw(canvas);
-                    this.panel.onShift(canvas);
-
-                    try {
-                        Log.d(TAG,"Loop took " + (SystemClock.uptimeMillis()-startTime) + "ms");
-                        long timeToSleep = LOOPTIME-(SystemClock.uptimeMillis()-startTime);
-                        if(timeToSleep > 0)
-                            Thread.sleep(timeToSleep);
-                    }
-                    catch (InterruptedException iex) { }
+                canvas = holder.lockCanvas();
+                if(canvas != null) {
+	                synchronized (holder) {
+	                    this.game.physics();
+	                    this.game.drawToCanvas(canvas);
+	                    long thisLoopDuration = SystemClock.uptimeMillis()-startTime;
+	                    Log.d(TAG,"Loop took " + thisLoopDuration + "ms");
+	                    long timeToSleep = LOOPTIME-thisLoopDuration;
+	                    if(timeToSleep > 0) {
+	                    	try { Thread.sleep(timeToSleep); }
+	                    	catch (InterruptedException iex) {/* Do we need to do anything here? */ }
+	                    }
+	                }
                 }
             }
             finally {

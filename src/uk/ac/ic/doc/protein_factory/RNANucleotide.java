@@ -22,7 +22,23 @@ public class RNANucleotide extends Nucleotide {
         	Log.e(TAG,"Exception message is: " + e.getMessage());
         }
 	}
+	
+	public void wobble(Random gen) {
+        x += gen.nextInt(3) - 2; // Bias to move left
+        y += gen.nextInt(3) - 1;
+	}
 
+	public void move(int x, int y) {
+		this.x  = x;
+		this.y = y;
+	}
+	
+	public int sqDist(int x, int y) {
+		int distX = this.x - x;
+        int distY = this.y - y;
+        return ((distX * distX) + (distY * distY));
+	}
+	
     protected char randomType(Random gen)
     {
         switch (gen.nextInt(4))

@@ -18,19 +18,12 @@ public abstract class Nucleotide {
 
     // Default constructor
     public Nucleotide() {}
+
+    public void moveLeft() {
+    	x--;
+    }
     
-
-    public Bitmap getBitmap() { return bitmap; }
-
-    public void setBitmap(Bitmap b) { this.bitmap = b; }
-
-    public int getX() { return x; }
-
-    public void setX(int x) { this.x = x;}
-
-    public int getY() { return y; }
-
-    public void setY(int y) {this.y = y;}
+	public int getX() { return x; }
 
     public void draw(Canvas canvas) {
         canvas.drawBitmap(bitmap, x - (bitmap.getWidth() / 2), y - (bitmap.getHeight() / 2), null);
