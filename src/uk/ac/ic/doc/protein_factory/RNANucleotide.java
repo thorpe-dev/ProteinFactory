@@ -68,14 +68,18 @@ public class RNANucleotide extends Nucleotide {
     {
         switch (gen.nextInt(4))
         {
-            case 0:
-                return 'a';
-            case 1:
-                return 'c';
-            case 2:
-                return 'g';
-            default:
-                return 'u';
+        case 0:
+        	this.type = 'A';
+            return 'a';
+        case 1:
+        	this.type = 'C';
+            return 'c';
+        case 2:
+        	this.type = 'G';
+            return 'g';
+        default:
+        	this.type = 'U';
+            return 'u';
         }
     }
     protected String randomColor(Random gen)

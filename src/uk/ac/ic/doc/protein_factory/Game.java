@@ -24,6 +24,8 @@ public class Game {
     protected Random gen = new Random();
     private Context c;
     
+    public enum State { Good, Acceptable, Bad, None }
+    
     public Game(Context c, SurfaceView s) {
     	this.c = c;
 
@@ -93,6 +95,19 @@ public class Game {
         }
     }
 
+    public State match(char dna, char rna) {
+    	if(rna=='T') return State.Bad;
+    	
+    	if((dna=='G' && rna=='C') ||
+    	   (dna=='A' && rna=='U') ||
+    	   (dna=='C' && rna=='G') ||
+           (dna=='T' && rna=='A'))
+           return State.Good;
+
+    	// TODO: Needs a lot more work
+    	return State.Acceptable;
+    }
+    
     private int displayWidth() {
     	return c.getResources().getDisplayMetrics().widthPixels;
     }
