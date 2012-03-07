@@ -30,11 +30,6 @@ public class Game {
     	this.c = c;
 
         generateGamePieces(displayWidth()/50);
-	    /*for (int i = 0; i < rnaCount; i++)
-	        floatingRNA.add(new RNANucleotide(c, gen, this));
-	    
-	    for (int i = 0; i < displayWidth() / 50; i++)
-	        backboneDNA.add(new DNANucleotide(c,i, this));*/
     }
     
     /* Called regularly by main loop */
@@ -159,23 +154,44 @@ public class Game {
             dna = new DNANucleotide(c,this,gen, i);
             if (!already_exists(dna.type()))
             {
-                 rna = new RNANucleotide(c,this,gen,dna.type());
+                 rna = new RNANucleotide(c,this,gen,dna.type(),displayWidth());
             }
             else
             {
-                rna = new RNANucleotide(c,this, gen);
+                rna = new RNANucleotide(c,this, gen,displayWidth());
             }
             backboneDNA.add(dna);
             floatingRNA.add(rna);
 
             // Add an extra bit of RNA
-            floatingRNA.add(new RNANucleotide(c,this,gen,dna.type()));
+            floatingRNA.add(new RNANucleotide(c,this,gen,dna.type(),displayWidth()));
         }
     }
 
     //TODO make this return an actual boolean, based on whether there is that type already in the floatingRNA
     protected boolean already_exists(char c)
     {
+        char rna_type;
+        switch (c)
+        {
+            case 'a':
+                rna_type = 'a';
+                break;
+            case 'c':
+                rna_type = 'a';
+                break;
+            case 'g':
+                rna_type = 'a';
+                break;
+            default:
+                rna_type = 'a';
+                break;
+        }
+        for (RNANucleotide rna : floatingRNA)
+        {
+            if (rna.type() == rna_type)
+                return true;
+        }
         return false;
     }
 }
