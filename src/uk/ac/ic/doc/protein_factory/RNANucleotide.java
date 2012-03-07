@@ -9,24 +9,29 @@ import android.util.Log;
 
 public class RNANucleotide extends Nucleotide {
     private static final String TAG = RNANucleotide.class.getSimpleName();
+
+    public char getType() {
+        return type;
+    }
+
     private char type;
     private int default_ = R.drawable.a_green;
     private boolean touched = false;
     private DNANucleotide snapped = null;
     
-	public RNANucleotide(Context c, Game g, Random gen) {
+	public RNANucleotide(Context c, Game g, Random gen, int displayWidth) {
 		super(g);
-        this.x = gen.nextInt(350) + 50;
-        this.y = gen.nextInt(200) + 100;
+        this.x = displayWidth - gen.nextInt(2 * displayWidth/3);
+        this.y = gen.nextInt(200) + 120;
         this.type = randomType(gen);
         this.bitmap = BitmapFactory.decodeResource(c.getResources(), generateNucleotide(R.drawable.class, this.type, randomColor(gen)));
 	}
     
-    public RNANucleotide(Context c, Game g, Random gen, char type)
+    public RNANucleotide(Context c, Game g, Random gen, char type, int displayWidth)
     {
         super(g);
-        this.x = gen.nextInt(350) + 50;
-        this.y = gen.nextInt(200) + 100;
+        this.x = displayWidth - gen.nextInt(2 * displayWidth/3);
+        this.y = gen.nextInt(200) + 120;
         this.type = type;
         this.bitmap = BitmapFactory.decodeResource(c.getResources(),generateNucleotide(R.drawable.class,type, randomColor(gen)));
     }
