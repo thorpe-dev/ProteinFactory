@@ -9,21 +9,27 @@ import android.util.Log;
 
 public class RNANucleotide extends Nucleotide {
     private static final String TAG = RNANucleotide.class.getSimpleName();
+    private char type;
     private int default_ = R.drawable.a_green;
     private boolean touched = false;
     private DNANucleotide snapped = null;
     
-	public RNANucleotide(Context c, Random gen, Game g) {
+	public RNANucleotide(Context c, Game g, Random gen) {
 		super(g);
         this.x = gen.nextInt(350) + 50;
         this.y = gen.nextInt(200) + 100;
-        try {
-        	this.bitmap = BitmapFactory.decodeResource(c.getResources(), generateNucleotide(R.drawable.class, randomType(gen), randomColor(gen)));
-        }
-        catch(Exception e) {
-        	Log.e(TAG,"Exception message is: " + e.getMessage());
-        }
+        this.type = randomType(gen);
+        this.bitmap = BitmapFactory.decodeResource(c.getResources(), generateNucleotide(R.drawable.class, this.type, randomColor(gen)));
 	}
+    
+    public RNANucleotide(Context c, Game g, Random gen, char type)
+    {
+        super(g);
+        this.x = gen.nextInt(350) + 50;
+        this.y = gen.nextInt(200) + 100;
+        this.type = type;
+        this.bitmap = BitmapFactory.decodeResource(c.getResources(),generateNucleotide(R.drawable.class,type, randomColor(gen)));
+    }
 	
 	public void wobbleLeft() {
 		if(snapped != null) {

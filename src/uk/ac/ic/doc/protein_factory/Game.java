@@ -29,11 +29,12 @@ public class Game {
     public Game(Context c, SurfaceView s) {
     	this.c = c;
 
-	    for (int i = 0; i < rnaCount; i++)
+        generateGamePieces(displayWidth()/50);
+	    /*for (int i = 0; i < rnaCount; i++)
 	        floatingRNA.add(new RNANucleotide(c, gen, this));
 	    
 	    for (int i = 0; i < displayWidth() / 50; i++)
-	        backboneDNA.add(new DNANucleotide(c,i, this));
+	        backboneDNA.add(new DNANucleotide(c,i, this));*/
     }
     
     /* Called regularly by main loop */
@@ -146,5 +147,35 @@ public class Game {
     	DNANucleotide nearest = (DNANucleotide) closestNucleotide(rna.getX(), rna.getY()-SNAP_OFFSET, SNAP_ACCURACY, backboneDNA);
     	if(nearest != null)
     		rna.snap(nearest, SNAP_OFFSET);
+    }
+
+    protected void generateGamePieces(int numberToGen)
+    {
+        DNANucleotide dna;
+        RNANucleotide rna;
+        for (int i = 0; i <numberToGen;i++)
+        {
+            int count = gen.nextInt(2) + 1;
+            dna = new DNANucleotide(c,this,gen, i);
+            if (!already_exists(dna.getType()))
+            {
+                 rna = new RNANucleotide(c,this,gen,dna.getType());
+            }
+            else
+            {
+                rna = new RNANucleotide(c,this, gen);
+            }
+            backboneDNA.add(dna);
+            floatingRNA.add(rna);
+
+            // Add an extra bit of RNA
+            floatingRNA.add(new RNANucleotide(c,this,gen,dna.getType()));
+        }
+    }
+
+    //TODO make this return an actual boolean, based on whether there is that type already in the floatingRNA
+    protected boolean already_exists(char c)
+    {
+        return false;
     }
 }
