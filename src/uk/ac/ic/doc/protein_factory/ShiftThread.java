@@ -1,8 +1,6 @@
 package uk.ac.ic.doc.protein_factory;
 
 import android.graphics.Canvas;
-import android.os.SystemClock;
-import android.util.Log;
 import android.view.SurfaceHolder;
 
 
@@ -26,14 +24,5 @@ public class ShiftThread extends UIThread {
     protected void method(Canvas canvas)
     {
         this.panel.onShift(canvas);
-    }
-
-    @Override
-    protected void sleepMethod (long startTime) throws InterruptedException
-    {
-        Log.d(TAG,"Loop took " + (SystemClock.uptimeMillis()-startTime) + "ms, was supposed to take " + LOOPTIME);
-        long timeToSleep = this.LOOPTIME-(SystemClock.uptimeMillis()-startTime);
-        if(timeToSleep > 0)
-            Thread.sleep(timeToSleep);
     }
 }

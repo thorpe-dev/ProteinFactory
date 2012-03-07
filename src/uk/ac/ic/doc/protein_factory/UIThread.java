@@ -63,5 +63,4 @@ public abstract class UIThread extends Thread{
     }
 
     protected void method(Canvas canvas) {  }
-    protected void sleepMethod(long startTime) throws InterruptedException {  }
 }

@@ -2,8 +2,6 @@ package uk.ac.ic.doc.protein_factory;
 
 import android.graphics.Canvas;
 import android.view.SurfaceHolder;
-import android.util.Log;
-import android.os.SystemClock;
 
 
 /**
@@ -26,14 +24,5 @@ public class MainThread extends UIThread {
     protected void method(Canvas canvas)
     {
         this.panel.onDraw(canvas);
-    }
-
-    @Override
-    protected void sleepMethod (long startTime) throws InterruptedException
-    {
-        Log.d(TAG,"Loop took " + (SystemClock.uptimeMillis()-startTime) + "ms");
-        long timeToSleep = this.LOOPTIME-(SystemClock.uptimeMillis()-startTime);
-        if(timeToSleep > 0)
-            Thread.sleep(timeToSleep);
     }
 }

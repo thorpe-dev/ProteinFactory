@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -17,8 +18,10 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 {
     private MainThread mainThread;
     private ShiftThread shiftThread;
+    protected Random gen = new Random();
     private List<RNANucleotide> rnaNucleotides = new LinkedList<RNANucleotide>();
     private Stack<RNANucleotide> unusedNucleotides = new Stack<RNANucleotide>();
+    private List<DNANucleotide> backbone = new LinkedList<DNANucleotide>();
     private static final String TAG = MainGamePanel.class.getSimpleName();
     private static final int rnaCount = 20;
 
@@ -26,10 +29,13 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
     {
         super(c);
 
-        Random gen = new Random();
+        DisplayMetrics displaymetrics = c.getResources().getDisplayMetrics();
 
         for (int i = 0; i < rnaCount; i++)
             rnaNucleotides.add(new RNANucleotide(c, gen));
+        
+        for (int i = 0; i < displaymetrics.widthPixels / 50; i++)
+            backbone.add(new DNANucleotide(c,gen,i));
 
         getHolder().addCallback(this);
         mainThread = new MainThread(getHolder(),this);
@@ -98,20 +104,43 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
     {
         if (e.getAction() == MotionEvent.ACTION_DOWN)
         {
+            // If the action is a touch, this will get the "closest" rna icon
+
+            int distX,distY;
+            RNANucleotide closest = rnaNucleotides.get(0);
+
+            // Taking absolute value expensive - just leave it like that, squaring will fix it
+            distX = closest.getX() - (int)e.getX();
+            distY = closest.getY() - (int)e.getY();
+
+            // Square routing is expensive - just use distance squared
+            int distance_squared = (distX * distX) + (distY * distY);
+            int current_distance_squared;
+
             for (RNANucleotide rna : rnaNucleotides)
-                rna.actionDown((int)e.getX(),(int)e.getY());
+            {
+                distX = rna.getX() - (int)e.getX();
+                distY = rna.getY() - (int)e.getY();
+                current_distance_squared = (distX * distX) + (distY * distY);
+                if (current_distance_squared < distance_squared)
+                {
+                    distance_squared = current_distance_squared;
+                    closest = rna;
+                }
+            }
+
+            closest.actionDown((int)e.getX(),(int)e.getY());
 
             Log.d(TAG,"Coords: x=" + e.getX() + ",y=" + e.getY());
         }
         if (e.getAction() == MotionEvent.ACTION_MOVE)
         {
-            Random generator = new Random();
             for (RNANucleotide rna : rnaNucleotides)
             {
                 if (rna.isTouched())
                 {
-                    rna.setX((int)e.getX() + generator.nextInt(3) - 1);
-                    rna.setY((int)e.getY() + generator.nextInt(3) - 1);
+                    rna.setX((int)e.getX() + gen.nextInt(3) - 1);
+                    rna.setY((int)e.getY() + gen.nextInt(3) - 1);
                 }
             }
         }
@@ -126,14 +155,14 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
     @Override
     protected void onDraw(Canvas canvas)
     {
-        Random generator = new Random();
+        renderBackBone(canvas);
         canvas.drawColor(Color.GREEN);
         for (RNANucleotide rna : rnaNucleotides)
         {
             if (!rna.isTouched())
             {
-                rna.setX(rna.getX() + generator.nextInt(3) - 1);
-                rna.setY(rna.getY() + generator.nextInt(3) - 1);
+                rna.setX(rna.getX() + gen.nextInt(3) - 1);
+                rna.setY(rna.getY() + gen.nextInt(3) - 1);
                 rna.draw(canvas);
             }
             else
@@ -146,6 +175,7 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
     protected void onShift(Canvas canvas)
     {
         canvas.drawColor(Color.GREEN);
+        renderBackBone(canvas);
         boolean updated = false;
 
         for (RNANucleotide rna : rnaNucleotides)
@@ -170,5 +200,13 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
                 rnaNucleotides.remove(rna);
             }
         }
+    }
+
+    protected void renderBackBone(Canvas canvas)
+    {
+        // Every thread needs to call this if they fuck with the canvas, as far as i can tell
+        for (DNANucleotide dna : backbone)
+            dna.draw(canvas);
+
     }
 }
