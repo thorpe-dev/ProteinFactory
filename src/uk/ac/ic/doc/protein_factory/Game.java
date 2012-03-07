@@ -9,6 +9,7 @@ import java.util.Stack;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.view.MotionEvent;
 import android.view.SurfaceView;
 
 public class Game {
@@ -30,7 +31,6 @@ public class Game {
 	        backboneDNA.add(new DNANucleotide(c,gen,i));
     }
     
-    public List<RNANucleotide> getFloatingRNA() { return this.floatingRNA; }
     private int displayWidth() {
     	return c.getResources().getDisplayMetrics().widthPixels;
     }
@@ -52,13 +52,9 @@ public class Game {
 
         for (RNANucleotide rna : floatingRNA)
         {
-        	if (!rna.isTouched())
-            {
-        		rna.wobble(gen);
-                if (rna.getX() > displayWidth())
-                	rnaToKill.add(rna);
-                	// TODO: VERIFY THIS WORKS
-            }
+       		rna.wobble(gen);
+            if (rna.getX() < 0) // TODO: Add offset so the whole image must be off the screen before we kill it
+              	rnaToKill.add(rna);
         }
 
         // Clean up RNA that went off the screen
@@ -70,5 +66,43 @@ public class Game {
 
         for (DNANucleotide dna : backboneDNA)
             dna.moveLeft();
+    }
+    
+    public void touch(MotionEvent e) {
+        if (e.getAction() == MotionEvent.ACTION_DOWN) {
+        	RNANucleotide closest = getClosest(e);
+        	if(closest != null)
+        		closest.setTouched(true);
+        }
+        if (e.getAction() == MotionEvent.ACTION_MOVE) {
+        	for(RNANucleotide rna : floatingRNA) {
+        		if(rna.touched())
+        			rna.move((int)e.getX(),(int)e.getY());
+        	}
+        }
+        else if (e.getAction() == MotionEvent.ACTION_UP) {
+        	for(RNANucleotide rna : floatingRNA) {
+        		rna.setTouched(false);
+        	}        	
+        }
+    }
+    
+    public RNANucleotide getClosest (MotionEvent e)
+    {
+        RNANucleotide closest_rna = null;
+        int closest_dist = (35*35)*2; // Don't return anything further than 35 pixels away 
+        							  // Also, magic numbers yay 
+        int this_dist;
+        for (RNANucleotide rna : floatingRNA)
+        {
+            this_dist = rna.sqDist((int)e.getX(), (int)e.getY());
+            if (this_dist < closest_dist)
+            {
+                closest_dist = this_dist;
+                closest_rna = rna;
+            }
+        }
+
+        return closest_rna;
     }
 }
