@@ -24,6 +24,8 @@ public class MainThread extends Thread {
         this.holder = h;
         this.panel = p;
     }
+    
+    public void setRunning(boolean running) { this.running = running; }
 
     @Override
     public void run() {
