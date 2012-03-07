@@ -158,6 +158,7 @@ public class Game {
         }
     }
 
+    //TODO make this return an actual boolean, based on whether there is that type already in the floatingRNA
     protected boolean already_exists(char c)
     {
         return false;
