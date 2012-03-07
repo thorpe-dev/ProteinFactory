@@ -13,13 +13,16 @@ import android.view.SurfaceHolder;
  * Time: 17:05
  * To change this template use File | Settings | File Templates.
  */
-public class MainThread extends UIThread {
-
+public class MainThread extends Thread {
+	private static final int LOOPTIME = 20; // Nominal (minimum) loop time in ms
+	private static final String TAG = MainThread.class.getSimpleName();
+    protected boolean running;
+    protected SurfaceHolder holder;
+    protected MainGamePanel panel;
 
     public MainThread(SurfaceHolder h, MainGamePanel p) {
-        super(h,p);
-        this.LOOPTIME = 20;
-        this.TAG = MainThread.class.getSimpleName();
+        this.holder = h;
+        this.panel = p;
     }
 
     @Override
@@ -39,7 +42,7 @@ public class MainThread extends UIThread {
 
                     try {
                         Log.d(TAG,"Loop took " + (SystemClock.uptimeMillis()-startTime) + "ms");
-                        long timeToSleep = this.LOOPTIME-(SystemClock.uptimeMillis()-startTime);
+                        long timeToSleep = LOOPTIME-(SystemClock.uptimeMillis()-startTime);
                         if(timeToSleep > 0)
                             Thread.sleep(timeToSleep);
                     }

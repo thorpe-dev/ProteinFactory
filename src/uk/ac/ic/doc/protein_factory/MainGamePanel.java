@@ -163,7 +163,7 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
     protected void onShift(Canvas canvas)
     {
         canvas.drawColor(Color.rgb(244, 235, 141));
-        renderBackBone(canvas);
+        //renderBackBone(canvas);
         boolean updated = false;
 
         for (RNANucleotide rna : rnaNucleotides)
@@ -179,6 +179,14 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
                 }
             }
             rna.draw(canvas);
+        }
+
+        for (DNANucleotide dna : backboneNucleotides)
+        {
+            dna.setX(dna.getX() + 4);
+            if (dna.getX() > getWidth())
+
+            dna.draw(canvas);
         }
 
         if (updated)
