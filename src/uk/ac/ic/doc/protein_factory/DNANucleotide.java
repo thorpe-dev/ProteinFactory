@@ -11,12 +11,20 @@ public class DNANucleotide extends Nucleotide {
 
     private static final String TAG = RNANucleotide.class.getSimpleName();
     private int default_ = R.drawable.a_backbone_green;
+    private boolean snapped = false;
 
-	public DNANucleotide(Context c, Random gen,int i) {
-        this.bitmap = BitmapFactory.decodeResource(c.getResources(), generateNucleotide(R.drawable.class, randomType(gen), randomColor(gen)));
+	public DNANucleotide(Context c, int i, Game g) {
+		super(g);
+        this.bitmap = BitmapFactory.decodeResource(c.getResources(), generateNucleotide(R.drawable.class, randomType(g.gen), randomColor(g.gen)));
         this.y = this.bitmap.getHeight() / 2;
         this.x = this.bitmap.getWidth() * i + this.bitmap.getWidth() / 2;
     }
+	
+    public void wobbleLeft() {
+    	x--;
+    }
+    
+    public boolean snapped() { return this.snapped; }
 
     protected char randomType(Random gen)
     {

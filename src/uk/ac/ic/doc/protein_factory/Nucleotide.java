@@ -9,6 +9,7 @@ public abstract class Nucleotide {
     protected Bitmap bitmap; // The actual bitmap image
     protected int x;
     protected int y; // X and Y Co-ordinates of the image
+    protected Game game;
 
 //    public Nucleotide (Context c, Random gen) {
 //        this.bitmap = BitmapFactory.decodeResource(c.getResources(), R.drawable.helix);
@@ -17,13 +18,18 @@ public abstract class Nucleotide {
 //    }
 
     // Default constructor
-    public Nucleotide() {}
+    public Nucleotide(Game g) { this.game = g;}
 
-    public void moveLeft() {
-    	x--;
-    }
+    abstract public void wobbleLeft();
     
 	public int getX() { return x; }
+	public int getY() { return y; }
+	
+	public int sqDist(int x, int y) {
+		int distX = this.x - x;
+        int distY = this.y - y;
+        return ((distX * distX) + (distY * distY));
+	}
 
     public void draw(Canvas canvas) {
         canvas.drawBitmap(bitmap, x - (bitmap.getWidth() / 2), y - (bitmap.getHeight() / 2), null);

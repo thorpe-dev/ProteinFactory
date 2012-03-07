@@ -11,8 +11,10 @@ public class RNANucleotide extends Nucleotide {
     private static final String TAG = RNANucleotide.class.getSimpleName();
     private int default_ = R.drawable.a_green;
     private boolean touched = false;
+    private DNANucleotide snapped = null;
     
-	public RNANucleotide(Context c, Random gen) {
+	public RNANucleotide(Context c, Random gen, Game g) {
+		super(g);
         this.x = gen.nextInt(350) + 50;
         this.y = gen.nextInt(200) + 100;
         try {
@@ -23,9 +25,14 @@ public class RNANucleotide extends Nucleotide {
         }
 	}
 	
-	public void wobble(Random gen) {
-        x += gen.nextInt(3) - 2; // Bias to move left
-        y += gen.nextInt(3) - 1;
+	public void wobbleLeft() {
+		if(snapped != null) {
+			x--;
+		}
+		else {
+			x += game.gen.nextInt(3) - 2; // Bias to move left
+			y += game.gen.nextInt(3) - 1;
+		}
 	}
 
 	public void move(int x, int y) {
@@ -33,14 +40,18 @@ public class RNANucleotide extends Nucleotide {
 		this.y = y;
 	}
 	
-	public int sqDist(int x, int y) {
-		int distX = this.x - x;
-        int distY = this.y - y;
-        return ((distX * distX) + (distY * distY));
-	}
-	
 	public boolean touched() { return touched; }
 	public void setTouched(boolean touched) { this.touched = touched; }
+	
+	public void snap(DNANucleotide dna, int snap_offset) {
+		this.snapped = dna;
+		// Set correct bitmap
+		// Set DNA's correct bitmap
+		// Set DNA as snapped
+		// Update score
+
+		
+	}
 	
     protected char randomType(Random gen)
     {
