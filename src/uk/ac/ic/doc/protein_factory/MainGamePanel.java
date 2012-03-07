@@ -56,7 +56,6 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
         mainThread.start();
         shiftThread.setRunning(true);
         shiftThread.start();
-
     }
 
     @Override
@@ -155,8 +154,9 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
     @Override
     protected void onDraw(Canvas canvas)
     {
-        renderBackBone(canvas);
         canvas.drawColor(Color.GREEN);
+        renderBackBone(canvas);
+
         for (RNANucleotide rna : rnaNucleotides)
         {
             if (!rna.isTouched())
