@@ -174,13 +174,13 @@ public class Game {
         char rna_type;
         switch (c)
         {
-            case 'a':
+            case 'A':
                 rna_type = 'a';
                 break;
-            case 'c':
+            case 'C':
                 rna_type = 'a';
                 break;
-            case 'g':
+            case 'G':
                 rna_type = 'a';
                 break;
             default:
