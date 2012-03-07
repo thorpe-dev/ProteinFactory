@@ -17,7 +17,6 @@ import java.util.Stack;
 public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 {
     private MainThread mainThread;
-    private ShiftThread shiftThread;
     protected Random gen = new Random();
     private List<RNANucleotide> rnaNucleotides = new LinkedList<RNANucleotide>();
     private Stack<RNANucleotide> unusedNucleotides = new Stack<RNANucleotide>();
@@ -39,7 +38,6 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 
         getHolder().addCallback(this);
         mainThread = new MainThread(getHolder(),this);
-        shiftThread = new ShiftThread(getHolder(),this);
         setFocusable(true);
     }
 
@@ -54,17 +52,14 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
     {
         mainThread.setRunning(true);
         mainThread.start();
-        shiftThread.setRunning(true);
-        shiftThread.start();
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder h)
     {
         Log.d(TAG,"Surface being destroyed");
-
+        
         mainThread.setRunning(false);
-        shiftThread.setRunning(false);
         ((Activity)getContext()).finish();
 
         // Not Reached?
@@ -81,20 +76,6 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
                 // try shutting the thread down again
             }
         }
-        retry = true;
-        while (retry)
-        {
-            try
-            {
-                shiftThread.join();
-                retry = false;
-            }
-            catch (InterruptedException e)
-            {
-                // try shutting the thread down again
-            }
-        }
-
         Log.d(TAG,"Thread has been shut down cleanly");
     }
 
@@ -181,7 +162,7 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 
     protected void onShift(Canvas canvas)
     {
-        canvas.drawColor(Color.GREEN);
+        canvas.drawColor(Color.rgb(244, 235, 141));
         renderBackBone(canvas);
         boolean updated = false;
 

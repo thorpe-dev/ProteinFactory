@@ -14,7 +14,12 @@ public class RNANucleotide extends Nucleotide {
 	public RNANucleotide(Context c, Random gen) {
         this.x = gen.nextInt(350) + 50;
         this.y = gen.nextInt(200) + 100;
-        this.bitmap = BitmapFactory.decodeResource(c.getResources(), generateNucleotide(R.drawable.class, randomType(gen), randomColor(gen)));
+        try {
+        	this.bitmap = BitmapFactory.decodeResource(c.getResources(), generateNucleotide(R.drawable.class, randomType(gen), randomColor(gen)));
+        }
+        catch(Exception e) {
+        	Log.e(TAG,"Exception message is: " + e.getMessage());
+        }
 	}
 
     protected char randomType(Random gen)

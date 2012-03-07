@@ -1,6 +1,8 @@
 package uk.ac.ic.doc.protein_factory;
 
 import android.graphics.Canvas;
+import android.os.SystemClock;
+import android.util.Log;
 import android.view.SurfaceHolder;
 
 
@@ -21,8 +23,34 @@ public class MainThread extends UIThread {
     }
 
     @Override
-    protected void method(Canvas canvas)
-    {
-        this.panel.onDraw(canvas);
+    public void run() {
+        Log.d(TAG,"Starting ShiftThread");
+        Canvas canvas;
+        while (running) {
+            long startTime = SystemClock.uptimeMillis();
+
+            // Update game state and render this state to the screen
+            canvas = null;
+            try {
+                canvas = this.holder.lockCanvas();
+                synchronized (holder) {
+                    this.panel.onDraw(canvas);
+                    this.panel.onShift(canvas);
+
+                    try {
+                        Log.d(TAG,"Loop took " + (SystemClock.uptimeMillis()-startTime) + "ms");
+                        long timeToSleep = this.LOOPTIME-(SystemClock.uptimeMillis()-startTime);
+                        if(timeToSleep > 0)
+                            Thread.sleep(timeToSleep);
+                    }
+                    catch (InterruptedException iex) { }
+                }
+            }
+            finally {
+                if (canvas != null)
+                    holder.unlockCanvasAndPost(canvas);
+            }
+        }
+        Log.d(TAG,"Game loop exceeded limits");
     }
 }

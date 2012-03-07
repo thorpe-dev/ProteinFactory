@@ -56,7 +56,9 @@ public class DNANucleotide extends Nucleotide {
             val = field.getInt(null);
             Log.d(TAG, "Value = " + val);
         }
-        catch (Exception e) { Log.d(TAG,"Exception message is: " + e.getMessage());  }
+        catch (Exception e) {
+        	Log.e(TAG,"Exception message is: " + e.getMessage());
+        }
         return val;
     }
 }
