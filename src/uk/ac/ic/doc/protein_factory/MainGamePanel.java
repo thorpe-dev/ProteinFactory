@@ -21,7 +21,7 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
     protected Random gen = new Random();
     private List<RNANucleotide> rnaNucleotides = new LinkedList<RNANucleotide>();
     private Stack<RNANucleotide> unusedNucleotides = new Stack<RNANucleotide>();
-    private List<DNANucleotide> backbone = new LinkedList<DNANucleotide>();
+    private List<DNANucleotide> backboneNucleotides = new LinkedList<DNANucleotide>();
     private static final String TAG = MainGamePanel.class.getSimpleName();
     private static final int rnaCount = 20;
 
@@ -35,7 +35,7 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
             rnaNucleotides.add(new RNANucleotide(c, gen));
         
         for (int i = 0; i < displaymetrics.widthPixels / 50; i++)
-            backbone.add(new DNANucleotide(c,gen,i));
+            backboneNucleotides.add(new DNANucleotide(c,gen,i));
 
         getHolder().addCallback(this);
         mainThread = new MainThread(getHolder(),this);
@@ -105,28 +105,7 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
         {
             // If the action is a touch, this will get the "closest" rna icon
 
-            int distX,distY;
-            RNANucleotide closest = rnaNucleotides.get(0);
-
-            // Taking absolute value expensive - just leave it like that, squaring will fix it
-            distX = closest.getX() - (int)e.getX();
-            distY = closest.getY() - (int)e.getY();
-
-            // Square routing is expensive - just use distance squared
-            int distance_squared = (distX * distX) + (distY * distY);
-            int current_distance_squared;
-
-            for (RNANucleotide rna : rnaNucleotides)
-            {
-                distX = rna.getX() - (int)e.getX();
-                distY = rna.getY() - (int)e.getY();
-                current_distance_squared = (distX * distX) + (distY * distY);
-                if (current_distance_squared < distance_squared)
-                {
-                    distance_squared = current_distance_squared;
-                    closest = rna;
-                }
-            }
+            RNANucleotide closest = getClosest(e);
 
             closest.actionDown((int)e.getX(),(int)e.getY());
 
@@ -149,6 +128,34 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
                 rna.setTouched(false);
         }
         return true;
+    }
+
+    protected RNANucleotide getClosest (MotionEvent e)
+    {
+        int distX,distY;
+        RNANucleotide closest = rnaNucleotides.get(0);
+
+        // Taking absolute value expensive - just leave it like that, squaring will fix it
+        distX = closest.getX() - (int)e.getX();
+        distY = closest.getY() - (int)e.getY();
+
+        // Square routing is expensive - just use distance squared
+        int distance_squared = (distX * distX) + (distY * distY);
+        int current_distance_squared;
+
+        for (RNANucleotide rna : rnaNucleotides)
+        {
+            distX = rna.getX() - (int)e.getX();
+            distY = rna.getY() - (int)e.getY();
+            current_distance_squared = (distX * distX) + (distY * distY);
+            if (current_distance_squared < distance_squared)
+            {
+                distance_squared = current_distance_squared;
+                closest = rna;
+            }
+        }
+
+        return closest;
     }
 
     @Override
@@ -205,7 +212,7 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
     protected void renderBackBone(Canvas canvas)
     {
         // Every thread needs to call this if they fuck with the canvas, as far as i can tell
-        for (DNANucleotide dna : backbone)
+        for (DNANucleotide dna : backboneNucleotides)
             dna.draw(canvas);
 
     }

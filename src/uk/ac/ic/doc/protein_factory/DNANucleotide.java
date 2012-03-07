@@ -14,7 +14,7 @@ public class DNANucleotide extends Nucleotide {
 	public DNANucleotide(Context c, Random gen,int i) {
         this.bitmap = BitmapFactory.decodeResource(c.getResources(), generateNucleotide(R.drawable.class, randomType(gen), randomColor(gen)));
         this.y = this.bitmap.getHeight() / 2;
-        this.x = this.bitmap.getWidth() * i;
+        this.x = this.bitmap.getWidth() * i + this.bitmap.getWidth() / 2;
     }
 
     protected char randomType(Random gen)
