@@ -8,40 +8,55 @@ import android.graphics.BitmapFactory;
 import android.util.Log;
 
 public class RNANucleotide extends Nucleotide {
-    private boolean touched; // if the dna has been touched
     private static final String TAG = RNANucleotide.class.getSimpleName();
     private char type;
     private int default_ = R.drawable.a_green;
+    private boolean touched = false;
+    private DNANucleotide snapped = null;
     
-	public RNANucleotide(Context c, Random gen) {
+	public RNANucleotide(Context c, Game g, Random gen) {
+		super(g);
         this.x = gen.nextInt(350) + 50;
         this.y = gen.nextInt(200) + 100;
         this.type = randomType(gen);
         this.bitmap = BitmapFactory.decodeResource(c.getResources(), generateNucleotide(R.drawable.class, this.type, randomColor(gen)));
 	}
     
-    public RNANucleotide(Context c,Random gen, char type)
+    public RNANucleotide(Context c, Game g, Random gen, char type)
     {
+        super(g);
         this.x = gen.nextInt(350) + 50;
         this.y = gen.nextInt(200) + 100;
         this.type = type;
         this.bitmap = BitmapFactory.decodeResource(c.getResources(),generateNucleotide(R.drawable.class,type, randomColor(gen)));
     }
 	
-	public void wobble(Random gen) {
-        x += gen.nextInt(3) - 2; // Bias to move left
-        y += gen.nextInt(3) - 1;
+	public void wobbleLeft() {
+		if(snapped != null) {
+			x--;
+		}
+		else {
+			x += game.gen.nextInt(3) - 2; // Bias to move left
+			y += game.gen.nextInt(3) - 1;
+		}
 	}
 
 	public void move(int x, int y) {
-		this.x  = x;
+		this.x = x;
 		this.y = y;
 	}
 	
-	public int sqDist(int x, int y) {
-		int distX = this.x - x;
-        int distY = this.y - y;
-        return ((distX * distX) + (distY * distY));
+	public boolean touched() { return touched; }
+	public void setTouched(boolean touched) { this.touched = touched; }
+	
+	public void snap(DNANucleotide dna, int snap_offset) {
+		this.snapped = dna;
+		// Set correct bitmap
+		// Set DNA's correct bitmap
+		// Set DNA as snapped
+		// Update score
+
+		
 	}
 	
     protected char randomType(Random gen)
@@ -83,20 +98,9 @@ public class RNANucleotide extends Nucleotide {
         }
         catch (Exception e) 
         { 
-            Log.d(TAG,"Exception message is: " + e.getMessage());
+            Log.e(TAG,"Exception message is: " + e.getMessage());
             return default_;
         }
     }
 
-    public boolean isTouched() { return this.touched;}
-
-    public void setTouched(boolean touched) {this.touched = touched;}
-
-    public void actionDown(int eventX, int eventY) {
-        if ((eventX >= (x - bitmap.getWidth() / 2 )) && (eventX <= (x + bitmap.getHeight() / 2)) &&
-                ((eventY >= (y - bitmap.getWidth() / 2 )) && (eventY <= (y + bitmap.getHeight() / 2))))
-            setTouched(true);
-        else
-            setTouched(false);
-    }
 }

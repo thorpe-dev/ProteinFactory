@@ -12,20 +12,27 @@ public class DNANucleotide extends Nucleotide {
     private static final String TAG = RNANucleotide.class.getSimpleName();
     private int default_ = R.drawable.a_backbone_green;
 
-    public char getType()
-    {
+    public char getType() {
         return type;
     }
 
     private char type;
+    private boolean snapped = false;
 
-	public DNANucleotide(Context c, Random gen,int i)
-    {
+	public DNANucleotide(Context c, Game g, Random gen,int i) {
+        super(g);
         this.type = randomType(gen);
-        this.bitmap = BitmapFactory.decodeResource(c.getResources(), generateNucleotide(R.drawable.class, type, randomColor(gen)));
+        this.bitmap = BitmapFactory.decodeResource(c.getResources(), generateNucleotide(R.drawable.class, this.type, randomColor(gen)));
         this.y = this.bitmap.getHeight() / 2;
         this.x = this.bitmap.getWidth() * i + this.bitmap.getWidth() / 2;
     }
+
+	
+    public void wobbleLeft() {
+    	x--;
+    }
+    
+    public boolean snapped() { return this.snapped; }
 
     protected char randomType(Random gen)
     {
@@ -66,7 +73,7 @@ public class DNANucleotide extends Nucleotide {
         }
         catch (Exception e) 
         { 
-            Log.e(TAG, "Exception message is: " + e.getMessage());
+            Log.e(TAG,"Exception message is: " + e.getMessage()); 
             return default_;
         }
     }
