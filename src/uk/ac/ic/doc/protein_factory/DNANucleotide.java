@@ -31,12 +31,16 @@ public class DNANucleotide extends Nucleotide {
         switch (gen.nextInt(4))
         {
             case 0:
+            	this.type = 'A';
                 return 'a';
             case 1:
+            	this.type = 'C';
                 return 'c';
             case 2:
+            	this.type = 'G';
                 return 'g';
             default:
+            	this.type = 'T';
                 return 't';
         }
     }
