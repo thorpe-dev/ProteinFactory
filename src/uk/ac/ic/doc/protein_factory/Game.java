@@ -16,26 +16,28 @@ public class Game {
 
     private final Collection<RNANucleotide> floatingRNA = Collections.synchronizedList(new LinkedList<RNANucleotide>());
     private final Collection<RNANucleotide> unusedRNA = new Stack<RNANucleotide>();
-
-    public List<DNANucleotide> getBackboneDNA() { return backboneDNA; }
-
     private final LinkedList<DNANucleotide> backboneDNA = new LinkedList<DNANucleotide>();
     private final LinkedList<Codon> codons = new LinkedList<Codon>();
+    private static final String DNAInput = "gctacaatcaaaaaccatcag";
+    private final Vector<String> splitInput;
+
     private static final int TOUCH_ACCURACY = 50; // px
     private static final int SNAP_ACCURACY = 50; // px
     private static final int SNAP_OFFSET = 85; // px
+
     final Random gen = new Random();
-    private static final CodonGroups codonGroups = new CodonGroups(); 
+    private static final CodonGroups codonGroups = new CodonGroups();
     private final Context c;
 
-    public Random getGen() { return gen; }
-    public Resources getResources() { return c.getResources(); }
-    private static final String DNAInput = "gctacaatcaaaaaccatcag";
-    private final Vector<String> splitInput;
     private final Paint paint = new Paint();
 
+    public Random getGen() { return gen; }
+    public List<DNANucleotide> getBackboneDNA() { return backboneDNA; }
+    public Resources getResources() { return c.getResources(); }
+
+
     public static enum State { Good, Acceptable, Bad, None }
-    
+
     private static final String TAG = Game.class.getSimpleName();
 
     public Game(Context c) {
@@ -46,22 +48,32 @@ public class Game {
 
         splitInput = split();
         generateGamePieces();
-        
+
     }
 
     /* Called regularly by main loop */
     public void drawToCanvas(Canvas canvas)
     {
         canvas.drawColor(Color.rgb(244, 235, 141));
-        
-        for (RNANucleotide rna : floatingRNA)
-            rna.draw(canvas);
-        
-        for (DNANucleotide dna : backboneDNA)
-            if (dna.getX() - 50 < screenWidth())
-                dna.draw(canvas);
-        
-        canvas.drawText("Score",screenWidth() - 170, screenHeight() - 20, paint);
+
+        // If the backbone is empty, then the player has successfully strung together all the DNA
+        if (backboneDNA.isEmpty())
+        {
+            canvas.drawText("You win",gen.nextInt(screenWidth()),gen.nextInt(screenHeight()),paint);
+        }
+
+        else
+        {
+
+            for (RNANucleotide rna : floatingRNA)
+                rna.draw(canvas);
+
+            for (DNANucleotide dna : backboneDNA)
+                if (dna.getX() - 50 < screenWidth())
+                    dna.draw(canvas);
+
+            canvas.drawText("Score",screenWidth() - 170, screenHeight() - 20, paint);
+        }
 
     }
 
@@ -77,12 +89,12 @@ public class Game {
                 rna.wobbleLeft();
                 if (rna.getX() + (rna.getWidth() / 2) < 0)
                 {
-                	if(rna.attached()) {
-                		unusedRNA.add(rna);
-                		i.remove();
-                	}
-                	else
-                		rna.setX(screenWidth() + rna.getWidth()/2);
+                    if(rna.attached()) {
+                        unusedRNA.add(rna);
+                        i.remove();
+                    }
+                    else
+                        rna.setX(screenWidth() + rna.getWidth()/2);
                 }
             }
         }
@@ -127,21 +139,21 @@ public class Game {
     }
 
     public State match(DNANucleotide dnaObj, RNANucleotide rnaObj) {
-    	char dna = dnaObj.type();
-    	char rna = rnaObj.type();
-    	
-    	Log.d(TAG, "Matching " + dna + " with " +  rna);
-    	
+        char dna = dnaObj.type();
+        char rna = rnaObj.type();
+
+        Log.d(TAG, "Matching " + dna + " with " +  rna);
+
         if(rna == dnaToRNA(dna)) return State.Good;
         else if(rna=='T') return State.Bad;
-        // NOT QUITE - NEED TO COMPARE CODONS, NOT DNA/RNA
-        //else if(codonGroups.sameGroup(dnaObj, rnaObj)) return State.Acceptable;
+            // NOT QUITE - NEED TO COMPARE CODONS, NOT DNA/RNA
+            //else if(codonGroups.sameGroup(dnaObj, rnaObj)) return State.Acceptable;
         else return State.Bad;
     }
 
     public int screenWidth() {return c.getResources().getDisplayMetrics().widthPixels; }
     public int screenHeight() { return c.getResources().getDisplayMetrics().heightPixels; }
-    
+
     private Nucleotide closestNucleotide (int x, int y, int maxdist, Collection<? extends Nucleotide> collection)
     {
         Nucleotide closest_rna = null;
@@ -186,7 +198,7 @@ public class Game {
     void generateGamePieces()
     {
         Codon c;
-        
+
         for (int i = 0; i < splitInput.size();i++)
         {
             c = new Codon(this,splitInput.get(i),i*3);
@@ -201,10 +213,10 @@ public class Game {
 
         for (DNANucleotide dna : backboneDNA)
         {
-        	// Generate an RNA piece corresponding to each DNA piece
-        	floatingRNA.add(new RNANucleotide(this,dnaToRNA(dna.type())));
-        	
-        	// And also some random ones
+            // Generate an RNA piece corresponding to each DNA piece
+            floatingRNA.add(new RNANucleotide(this,dnaToRNA(dna.type())));
+
+            // And also some random ones
             floatingRNA.add(new RNANucleotide(this));
         }
     }
@@ -232,7 +244,7 @@ public class Game {
             case 'T':
                 return 'A';
             default:
-            	throw new RuntimeException("Unexpected DNA type: " + c);
+                throw new RuntimeException("Unexpected DNA type: " + c);
         }
     }
 }
