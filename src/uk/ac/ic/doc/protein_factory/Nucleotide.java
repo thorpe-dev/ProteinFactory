@@ -6,8 +6,8 @@ import android.graphics.Canvas;
 
 public abstract class Nucleotide {
 
-    public Bitmap getBitmap() {
-        return bitmap;
+    public int getWidth() {
+        return bitmap.getWidth();
     }
 
     protected Bitmap bitmap; // The actual bitmap image

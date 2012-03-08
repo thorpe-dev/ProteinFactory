@@ -14,10 +14,10 @@ public class DNANucleotide extends Nucleotide {
 
     private boolean snapped = false;
 
-	public DNANucleotide(Context c, Game g, Random gen,int i) {
+	public DNANucleotide(Game g, int i) {
         super(g);
-        this.type = randomType(gen);
-        this.bitmap = BitmapFactory.decodeResource(c.getResources(), generateNucleotide(R.drawable.class, this.type, randomColor(gen)));
+        this.type = randomType(g.getGen());
+        this.bitmap = BitmapFactory.decodeResource(g.getResources(), generateNucleotide(R.drawable.class, this.type, randomColor(g.getGen())));
         this.y = this.bitmap.getHeight() / 2;
         this.x = this.bitmap.getWidth() * i + this.bitmap.getWidth() / 2;
     }

@@ -14,21 +14,21 @@ public class RNANucleotide extends Nucleotide {
     private boolean touched = false;
     private DNANucleotide snappedTo = null;
     
-	public RNANucleotide(Context c, Game g, Random gen, int displayWidth) {
+	public RNANucleotide(Game g, int displayWidth) {
 		super(g);
-        this.x = displayWidth - gen.nextInt(2 * displayWidth/3);
-        this.y = gen.nextInt(200) + 120;
-        this.type = randomType(gen);
-        this.bitmap = BitmapFactory.decodeResource(c.getResources(), generateNucleotide(R.drawable.class, this.type, randomColor(gen)));
+        this.x = displayWidth - g.getGen().nextInt(2 * displayWidth/3);
+        this.y = g.getGen().nextInt(200) + 120;
+        this.type = randomType(g.getGen());
+        this.bitmap = BitmapFactory.decodeResource(g.getResources(), generateNucleotide(R.drawable.class, this.type, randomColor(g.getGen())));
 	}
     
-    public RNANucleotide(Context c, Game g, Random gen, char type, int displayWidth)
+    public RNANucleotide(Game g, char type, int displayWidth)
     {
         super(g);
-        this.x = displayWidth - gen.nextInt(2 * displayWidth/3);
-        this.y = gen.nextInt(200) + 120;
+        this.x = displayWidth - g.getGen().nextInt(2 * displayWidth/3);
+        this.y = g.getGen().nextInt(200) + 120;
         this.type = type;
-        this.bitmap = BitmapFactory.decodeResource(c.getResources(),generateNucleotide(R.drawable.class,type, randomColor(gen)));
+        this.bitmap = BitmapFactory.decodeResource(g.getResources(),generateNucleotide(R.drawable.class,type, randomColor(g.getGen())));
     }
 	
 	public void wobbleLeft() {
@@ -44,14 +44,13 @@ public class RNANucleotide extends Nucleotide {
 	public boolean touched() { return touched; }
 	public void setTouched(boolean touched) { this.touched = touched; }
 	
-	public void snap(DNANucleotide dna, int snap_offset) {
+	public void snap(DNANucleotide dna)
+    {
 		this.snappedTo = dna;
 		// Set correct bitmap
 		// Set DNA's correct bitmap
 		// Set DNA as snappedTo
 		// Update score
-
-		
 	}
 	
     protected char randomType(Random gen)
@@ -85,7 +84,6 @@ public class RNANucleotide extends Nucleotide {
             default:
                 return "red";
         }
-
     }
 
     protected int generateNucleotide(Class<?> c, char type, String color)
@@ -101,5 +99,4 @@ public class RNANucleotide extends Nucleotide {
             return default_;
         }
     }
-
 }
