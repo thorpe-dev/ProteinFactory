@@ -20,16 +20,18 @@ public class CodonGroups {
 	private Map<String, AminoAcid> codonsToAminoAcids = new HashMap<String, AminoAcid>(100);
 	private Map<AminoAcid, Collection<String>> aminoAcidsToCodons = new EnumMap<AminoAcid, Collection<String>>(AminoAcid.class);
 	
-	public boolean sameGroup(Codon a, Codon b) {
-		AminoAcid aminoAcid = codonsToAminoAcids.get(a.toString());
+	// ALWAYS ALWAYS MUST COMPARE RNA
+	public boolean sameGroup(String a, String b) {
+		AminoAcid aminoAcid = codonsToAminoAcids.get(a);
 		Collection<String> group = aminoAcidsToCodons.get(aminoAcid);
 		
-		return group.contains(b.toString());
+		return group.contains(b);
 	}
 	
-	private void associate(String codon, AminoAcid aminoAcid) {
-		codonsToAminoAcids.put(codon, aminoAcid);
-		aminoAcidsToCodons.get(aminoAcid).add(codon);
+	private void associate(String dnaCodon, AminoAcid aminoAcid) {
+		String rnaCodon = Game.dnaToRNA(dnaCodon);
+		codonsToAminoAcids.put(rnaCodon, aminoAcid);
+		aminoAcidsToCodons.get(aminoAcid).add(rnaCodon);
 	}
 	
 	public CodonGroups() {
@@ -56,7 +58,7 @@ public class CodonGroups {
 		associate("TCT", AminoAcid.Ser); 
 		associate("TCC", AminoAcid.Ser); 
 		associate("TCA", AminoAcid.Ser); 
-		associate("TCG", AminoAcid.Ser); 
+		associate("TCG", AminoAcid.Ser);
 		associate("CCT", AminoAcid.Pro); 
 		associate("CCC", AminoAcid.Pro); 
 		associate("CCA", AminoAcid.Pro); 
