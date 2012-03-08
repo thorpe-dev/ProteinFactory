@@ -35,7 +35,7 @@ class MainThread extends Thread {
 	                    this.game.physics();
 	                    this.game.drawToCanvas(canvas);
 	                    long thisLoopDuration = SystemClock.uptimeMillis()-startTime;
-	                    Log.d(TAG,"Loop took " + thisLoopDuration + "ms");
+	                    Log.v(TAG,"Loop took " + thisLoopDuration + "ms");
 	                    long timeToSleep = LOOPTIME-thisLoopDuration;
 	                    if(timeToSleep > 0) {
 	                    	try { Thread.sleep(timeToSleep); }
