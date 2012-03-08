@@ -59,11 +59,19 @@ public final class R {
         public static final int u_orange=0x7f02002d;
         public static final int u_red=0x7f02002e;
     }
+    public static final class id {
+        public static final int home=0x7f050000;
+        public static final int instructions=0x7f050003;
+        public static final int new_game=0x7f050002;
+        public static final int play=0x7f050001;
+    }
     public static final class layout {
-        public static final int main=0x7f030000;
+        public static final int instructions=0x7f030000;
+        public static final int main=0x7f030001;
     }
     public static final class string {
         public static final int app_name=0x7f040000;
+        public static final int instructions=0x7f040002;
         public static final int score=0x7f040001;
     }
 }

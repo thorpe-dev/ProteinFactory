@@ -1,28 +1,22 @@
 package uk.ac.ic.doc.protein_factory;
 
-import java.lang.reflect.Field;
 import java.util.Random;
 
-import android.graphics.BitmapFactory;
-import android.util.Log;
-
 public class RNANucleotide extends Nucleotide {
-    private static final String TAG = RNANucleotide.class.getSimpleName();
-
     private boolean touched = false;
     private DNANucleotide snappedTo = null;
     
 	public RNANucleotide(Game g) {
-        this(g,randomType(g.getGen()));
+		this(g, randomType(g.getGen()));
 	}
     
     public RNANucleotide(Game g, char type)
     {
-        super(g);
+        super(g, "_", DNANucleotide.class.getSimpleName());
         this.x = g.displayWidth() - g.getGen().nextInt(2 * g.displayWidth()/3);
         this.y = g.getGen().nextInt(200) + 120;
         this.type = type;
-        this.bitmap = BitmapFactory.decodeResource(g.getResources(),generateNucleotide(R.drawable.class,type, randomColor(g.getGen())));
+        setBitmap("grey");
     }
 	
 	public void wobbleLeft() {
@@ -41,13 +35,22 @@ public class RNANucleotide extends Nucleotide {
 	public void snap(DNANucleotide dna)
     {
 		this.snappedTo = dna;
+		
+		Game.State match = game.match(dna, this);
+		
+		switch(match) {
+		case Good:
+			setBitmap("green");
+			// Increment scoretype
+		}
+		
 		// Set correct bitmap
 		// Set DNAs correct bitmap
 		// Set DNA as snappedTo
 		// Update score
 	}
 	
-    static char randomType(Random gen)
+    private static char randomType(Random gen)
     {
         switch (gen.nextInt(4))
         {
@@ -59,35 +62,6 @@ public class RNANucleotide extends Nucleotide {
             return 'g';
         default:
             return 'u';
-        }
-    }
-    protected String randomColor(Random gen)
-    {
-        switch (gen.nextInt(4))
-        {
-            case 0:
-                return "green";
-            case 1:
-                return "grey";
-            case 2:
-                return "orange";
-            default:
-                return "red";
-        }
-    }
-
-    protected int generateNucleotide(Class<?> c, char type, String color)
-    {
-        try
-        {
-            final Field field = c.getDeclaredField(type + "_" + color);
-            return field.getInt(null);
-        }
-        catch (Exception e) 
-        { 
-            Log.e(TAG,"Exception message is: " + e.getMessage());
-            return R.drawable.a_green;
-
         }
     }
 }

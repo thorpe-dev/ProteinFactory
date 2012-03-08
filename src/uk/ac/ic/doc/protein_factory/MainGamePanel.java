@@ -2,6 +2,7 @@ package uk.ac.ic.doc.protein_factory;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -18,6 +19,16 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
     {
         super(c);
         
+        game = new Game(c);
+        mainThread = new MainThread(getHolder(), game);
+
+        getHolder().addCallback(this);
+        setFocusable(true);
+    }
+
+    public MainGamePanel(Context c, AttributeSet s)
+    {
+        super(c,s);
         game = new Game(c);
         mainThread = new MainThread(getHolder(), game);
 

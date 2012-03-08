@@ -6,29 +6,25 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 
-public class SplashScreen extends Activity {
-
-    @Override
+public class InstructionScreen extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.main);
+        setContentView(R.layout.instructions);
+        super.onCreate(savedInstanceState);
     }
-
-    public void newGame(View v)
+    
+    public void home(View v)
     {
-        Intent i = new Intent(SplashScreen.this,ProteinFactoryActivity.class);
-        SplashScreen.this.startActivity(i);
-
+        Intent i = new Intent(InstructionScreen.this,SplashScreen.class);
+        InstructionScreen.this.startActivity(i);
     }
-
-    public void viewInstructions(View v)
+    
+    public void play(View v)
     {
-        Intent i = new Intent(SplashScreen.this,InstructionScreen.class);
-        SplashScreen.this.startActivity(i);
-
+        Intent i = new Intent(InstructionScreen.this, ProteinFactoryActivity.class);
+        InstructionScreen.this.startActivity(i);
     }
 }

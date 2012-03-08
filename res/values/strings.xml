@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Protein Factory</string>
     <string name="score">SCORE</string>
+    <string name="instructions">HELLO YES THIS IS DOG</string>
 </resources>

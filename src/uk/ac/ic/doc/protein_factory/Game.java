@@ -2,6 +2,7 @@ package uk.ac.ic.doc.protein_factory;
 
 import java.util.*;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
@@ -9,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.widget.Button;
 
 public class Game {
 
@@ -31,7 +33,7 @@ public class Game {
     private final Vector<String> splitInput;
     private final Paint paint = new Paint();
 
-    public enum State { Good, Acceptable, Bad, None }
+    public static enum State { Good, Acceptable, Bad, None }
     
     private static final String TAG = Game.class.getSimpleName();
 
@@ -43,6 +45,7 @@ public class Game {
 
         splitInput = split();
         generateGamePieces();
+        
     }
 
     /* Called regularly by main loop */
@@ -116,13 +119,16 @@ public class Game {
         }
     }
 
-    public State match(char dna, char rna) {
+    public State match(DNANucleotide dnaObj, RNANucleotide rnaObj) {
+    	char dna = dnaObj.type();
+    	char rna = rnaObj.type();
+    	
         if(rna=='T') return State.Bad;
 
         if((dna=='G' && rna=='C') ||
-                (dna=='A' && rna=='U') ||
-                (dna=='C' && rna=='G') ||
-                (dna=='T' && rna=='A'))
+           (dna=='A' && rna=='U') ||
+           (dna=='C' && rna=='G') ||
+           (dna=='T' && rna=='A'))
             return State.Good;
 
         // TODO: Needs a lot more work
