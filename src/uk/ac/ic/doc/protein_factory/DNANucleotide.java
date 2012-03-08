@@ -1,19 +1,16 @@
 package uk.ac.ic.doc.protein_factory;
 
 public class DNANucleotide extends Nucleotide {
+    //private final static String TAG = DNANucleotide.class.getSimpleName();
 
-    private boolean snapped = false;
-
-	public DNANucleotide(Game g, char c, int i) {
-        super(g, "_backbone_", DNANucleotide.class.getSimpleName());
-        this.type = c;
+	public DNANucleotide(Game g, char type, int i) {
+        super(g, type);
         setBitmap("grey");
         this.y = this.bitmap.getHeight() / 2;
         this.x = this.bitmap.getWidth() * i + this.bitmap.getWidth() / 2;
     }
 
+	protected String partial_bitmap_filename() { return "_backbone_"; }
 	
     public void wobbleLeft() { x--; }
-    
-    public boolean snapped() { return this.snapped; }
 }

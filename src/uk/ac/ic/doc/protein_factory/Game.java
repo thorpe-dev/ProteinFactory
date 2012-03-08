@@ -12,7 +12,7 @@ import android.view.MotionEvent;
 
 public class Game {
 
-    private final Collection<RNANucleotide> floatingRNA = new LinkedList<RNANucleotide>();
+    private final Collection<RNANucleotide> floatingRNA = Collections.synchronizedList(new LinkedList<RNANucleotide>());
     private final Collection<RNANucleotide> unusedRNA = new Stack<RNANucleotide>();
 
     public List<DNANucleotide> getBackboneDNA() { return backboneDNA; }
@@ -23,6 +23,7 @@ public class Game {
     private static final int SNAP_ACCURACY = 50; // px
     private static final int SNAP_OFFSET = 85; // px
     final Random gen = new Random();
+    private static final CodonGroups codonGroups = new CodonGroups(); 
     private final Context c;
 
     public Random getGen() { return gen; }
@@ -49,14 +50,15 @@ public class Game {
     public void drawToCanvas(Canvas canvas)
     {
         canvas.drawColor(Color.rgb(244, 235, 141));
-        canvas.drawText("Score",displayWidth() - 170, displayHeight() - 20, paint);
-
-        for (DNANucleotide dna : backboneDNA)
-            if (dna.getX() - 50 < displayWidth())
-                dna.draw(canvas);
-
+        
         for (RNANucleotide rna : floatingRNA)
             rna.draw(canvas);
+        
+        for (DNANucleotide dna : backboneDNA)
+            if (dna.getX() - 50 < screenWidth())
+                dna.draw(canvas);
+        
+        canvas.drawText("Score",screenWidth() - 170, screenHeight() - 20, paint);
 
     }
 
@@ -72,8 +74,12 @@ public class Game {
                 rna.wobbleLeft();
                 if (rna.getX() + (rna.getWidth() / 2) < 0)
                 {
-                    unusedRNA.add(rna);
-                    i.remove();
+                	if(rna.attached()) {
+                		unusedRNA.add(rna);
+                		i.remove();
+                	}
+                	else
+                		rna.setX(screenWidth() + rna.getWidth()/2);
                 }
             }
         }
@@ -95,7 +101,7 @@ public class Game {
     public void touch(MotionEvent e) {
         if (e.getAction() == MotionEvent.ACTION_DOWN) {
             RNANucleotide closest = (RNANucleotide) closestNucleotide((int)e.getX(), (int)e.getY(), TOUCH_ACCURACY, floatingRNA);
-            if(closest != null)
+            if(closest != null && !closest.attached())
                 closest.setTouched(true);
         }
         if (e.getAction() == MotionEvent.ACTION_MOVE) {
@@ -110,6 +116,7 @@ public class Game {
             for(RNANucleotide rna : floatingRNA) {
                 if(rna.touched()) {
                     rna.setTouched(false);
+                    attemptSnapToBackBone(rna);
                     attemptAttachToBackBone(rna);
                 }
             }
@@ -120,30 +127,22 @@ public class Game {
     	char dna = dnaObj.type();
     	char rna = rnaObj.type();
     	
-        if(rna=='T') return State.Bad;
-
-        if((dna=='G' && rna=='C') ||
-           (dna=='A' && rna=='U') ||
-           (dna=='C' && rna=='G') ||
-           (dna=='T' && rna=='A'))
-            return State.Good;
-
-        // TODO: Needs a lot more work
-        return State.Acceptable;
+    	Log.d(TAG, "Matching " + dna + " with " +  rna);
+    	
+        if(rna == dnaToRNA(dna)) return State.Good;
+        else if(rna=='T') return State.Bad;
+        // NOT QUITE - NEED TO COMPARE CODONS, NOT DNA/RNA
+        //else if(codonGroups.sameGroup(dnaObj, rnaObj)) return State.Acceptable;
+        else return State.Bad;
     }
 
-    int displayWidth() {return c.getResources().getDisplayMetrics().widthPixels; }
-
-    private int displayHeight()
-    {
-        return c.getResources().getDisplayMetrics().heightPixels;
-    }
-
+    public int screenWidth() {return c.getResources().getDisplayMetrics().widthPixels; }
+    public int screenHeight() { return c.getResources().getDisplayMetrics().heightPixels; }
+    
     private Nucleotide closestNucleotide (int x, int y, int maxdist, Collection<? extends Nucleotide> collection)
     {
         Nucleotide closest_rna = null;
         int closest_dist = (maxdist*maxdist); // Don't return anything further than maxdist pixels away 
-        // Also, magic numbers yay 
         int this_dist;
         for (Nucleotide rna : collection)
         {
@@ -161,14 +160,14 @@ public class Game {
 
     private void attemptSnapToBackBone(RNANucleotide rna) {
         DNANucleotide nearest = (DNANucleotide) closestNucleotide(rna.getX(), rna.getY()-SNAP_OFFSET, SNAP_ACCURACY, backboneDNA);
-        if(nearest != null && !nearest.snapped())
-            rna.move(nearest.getX()-2, nearest.getY()+SNAP_OFFSET); // getX()-2 is a hack - I think the images aren't aligned properly?
+        if(nearest != null && !nearest.attached())
+            rna.move(nearest.getX(), nearest.getY()+SNAP_OFFSET);
     }
 
     private void attemptAttachToBackBone(RNANucleotide rna) {
         DNANucleotide nearest = (DNANucleotide) closestNucleotide(rna.getX(), rna.getY()-SNAP_OFFSET, SNAP_ACCURACY, backboneDNA);
-        if(nearest != null && !nearest.snapped())
-            rna.snap(nearest);
+        if(nearest != null && !nearest.attached())
+            rna.attach(nearest);
     }
 
     private Vector<String> split()
@@ -197,33 +196,21 @@ public class Game {
             Log.d(TAG, ""+d.getX());
         }
 
-        RNANucleotide rna;
         for (DNANucleotide dna : backboneDNA)
         {
-            if (!already_exists(dnaToRNA(dna.type())))
-            {
-                rna = new RNANucleotide(this,dnaToRNA(dna.type()));
-            }
-            else
-            {
-                rna = new RNANucleotide(this);
-            }
-
-            floatingRNA.add(rna);
-            
-            if (gen.nextBoolean())
-            {
-                floatingRNA.add(new RNANucleotide(this));
-            }
+        	// Generate an RNA piece corresponding to each DNA piece
+        	floatingRNA.add(new RNANucleotide(this,dnaToRNA(dna.type())));
+        	
+        	// And also some random ones
+            floatingRNA.add(new RNANucleotide(this));
         }
     }
 
     boolean already_exists(char rna_type)
     {
-
         for (RNANucleotide rna : floatingRNA)
         {
-            if (rna.type(rna_type))
+            if (rna.type() == rna_type)
                 return true;
         }
         return false;
@@ -233,14 +220,16 @@ public class Game {
     {
         switch (c)
         {
-            case 'a':
-                return 'u';
-            case 'c':
-                return 'g';
-            case 'g':
-                return 'c';
+            case 'A':
+                return 'U';
+            case 'C':
+                return 'G';
+            case 'G':
+                return 'C';
+            case 'T':
+                return 'A';
             default:
-                return 'a';
+            	throw new RuntimeException("Unexpected DNA type: " + c);
         }
     }
 }

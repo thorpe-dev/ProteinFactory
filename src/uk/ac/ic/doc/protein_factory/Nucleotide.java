@@ -9,32 +9,33 @@ import android.util.Log;
 
 
 abstract class Nucleotide {
-
-    public int getWidth() {
-        return bitmap.getWidth();
-    }
+	private static final String TAG = Nucleotide.class.getSimpleName();
 
     Bitmap bitmap; // The actual bitmap image
     int x;
     int y; // X and Y Co-ordinates of the image
     final Game game;
     char type;
-    final String PARTIAL_BITMAP_FILENAME;
-    final String TAG;
+    protected boolean attached = false;
     
-    Nucleotide(Game g, String pbf, String tag) {
+    Nucleotide(Game g, char type) {
     	this.game = g;
-    	this.PARTIAL_BITMAP_FILENAME = pbf;
-    	this.TAG = tag;
+    	this.type = Character.toUpperCase(type);
     }
 
     public abstract void wobbleLeft();
+    protected abstract String partial_bitmap_filename();
     
 	public int getX() { return x; }
     public void setX(int x) {this.x = x;}
 	public int getY() { return y; }
 	public char type() { return type; }
-	public boolean type(char t) { return (t == type); }
+	public boolean attached() { return attached; }
+	public void setAttached(boolean attached) { this.attached = attached; }
+	
+    public int getWidth() {
+        return bitmap.getWidth();
+    }
 	
 	public int sqDist(int x, int y) {
 		int distX = this.x - x;
@@ -59,12 +60,12 @@ abstract class Nucleotide {
     {
         try
         {
-            final Field field = R.drawable.class.getDeclaredField(this.type + this.PARTIAL_BITMAP_FILENAME + color);
+            final Field field = R.drawable.class.getDeclaredField(Character.toLowerCase(this.type) + this.partial_bitmap_filename() + color);
             return field.getInt(null);
         }
         catch (Exception e) 
         { 
-            Log.e(this.TAG,"Exception message is: " + e.getMessage());
+            Log.e(TAG,"Exception message is: " + e.getMessage());
             return R.drawable.dna_helix_icon;
         }
     }

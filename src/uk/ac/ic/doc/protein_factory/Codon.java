@@ -6,7 +6,6 @@ import java.util.LinkedList;
 class Codon
 {
     public LinkedList<DNANucleotide> getNucleotides() { return nucleotides; }
-
     private LinkedList<DNANucleotide> nucleotides = new LinkedList<DNANucleotide>();
 
     public Codon(Game g,String s, int pos)
@@ -18,4 +17,16 @@ class Codon
         }
 
     }
+    
+    public String toString() {
+    	String ret = "";
+    	for(DNANucleotide nuc : nucleotides) {
+    		ret += nuc.type();
+    	}
+    	return ret;
+    }
+    
+    /*private AminoAcid aminoAcid() {
+    	
+    }*/
 }
