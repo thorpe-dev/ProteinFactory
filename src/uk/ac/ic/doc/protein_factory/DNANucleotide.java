@@ -29,6 +29,7 @@ public class DNANucleotide extends Nucleotide {
     
     public boolean snapped() { return this.snapped; }
 
+
     protected char randomType(Random gen)
     {
         switch (gen.nextInt(4))

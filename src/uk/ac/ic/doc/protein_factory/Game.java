@@ -1,14 +1,11 @@
 package uk.ac.ic.doc.protein_factory;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
-import java.util.Stack;
+import java.util.*;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 
@@ -23,19 +20,24 @@ public class Game {
     public static final int SNAP_OFFSET = 85; // px
     protected Random gen = new Random();
     private Context c;
+
+    private Paint paint = new Paint();
     
     public enum State { Good, Acceptable, Bad, None }
     
     public Game(Context c, SurfaceView s) {
     	this.c = c;
 
-        generateGamePieces(displayWidth()/50);
+        paint.setColor(Color.BLACK);
+
+        generateGamePieces(displayWidth() / 50);
     }
     
     /* Called regularly by main loop */
     public void drawToCanvas(Canvas canvas)
     {
     	canvas.drawColor(Color.rgb(244, 235, 141));
+        canvas.drawText("Score",displayWidth()-50, displayHeight() - 20, paint);
         
         for (DNANucleotide dna : backboneDNA)
             dna.draw(canvas);
@@ -49,22 +51,27 @@ public class Game {
     public void physics()
     {
         Collection<RNANucleotide> rnaToKill = new Stack<RNANucleotide>();
-        
-        for (RNANucleotide rna : floatingRNA)
+        RNANucleotide rna;        
+        for (Iterator<RNANucleotide> i = floatingRNA.iterator(); i.hasNext();)
         {
+            rna = i.next();
         	if(!rna.touched()) {
         		rna.wobbleLeft();
-        		if (rna.getX() < 0) // TODO: Add offset so the whole image must be off the screen before we kill it
-        			rnaToKill.add(rna);
+        		if (rna.getX() + (rna.getBitmap().getWidth() / 2) < 0)
+                {
+                    unusedRNA.push(rna);
+                    i.remove();
+                }
         	}
         }
 
         // Clean up RNA that went off the screen
-        for (RNANucleotide rna : rnaToKill)
+        /*for (RNANucleotide rna : rnaToKill)
         {
         	unusedRNA.push(rna);
             floatingRNA.remove(rna); // TODO: Improve; this is O(n) for a linked list :(
-        }
+                                     // TODO: M - I don't see how improve it, keeping the index of the element would require updating it?
+        }*/
 
         for (DNANucleotide dna : backboneDNA)
             dna.wobbleLeft();
@@ -110,6 +117,11 @@ public class Game {
     
     private int displayWidth() {
     	return c.getResources().getDisplayMetrics().widthPixels;
+    }
+    
+    private int displayHeight()
+    {
+        return c.getResources().getDisplayMetrics().heightPixels;
     }
     
 	private Nucleotide closestNucleotide (int x, int y, int maxdist, Collection<? extends Nucleotide> collection)
@@ -175,16 +187,16 @@ public class Game {
         switch (c)
         {
             case 'A':
-                rna_type = 'a';
+                rna_type = 'U';
                 break;
             case 'C':
-                rna_type = 'a';
+                rna_type = 'G';
                 break;
             case 'G':
-                rna_type = 'a';
+                rna_type = 'C';
                 break;
             default:
-                rna_type = 'a';
+                rna_type = 'A';
                 break;
         }
         for (RNANucleotide rna : floatingRNA)

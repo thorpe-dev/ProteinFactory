@@ -6,6 +6,10 @@ import android.graphics.Canvas;
 
 public abstract class Nucleotide {
 
+    public Bitmap getBitmap() {
+        return bitmap;
+    }
+
     protected Bitmap bitmap; // The actual bitmap image
     protected int x;
     protected int y; // X and Y Co-ordinates of the image

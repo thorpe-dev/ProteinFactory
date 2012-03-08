@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Protein Factory</string>
+    <string name="score">SCORE</string>
 </resources>
