@@ -14,6 +14,9 @@ public class Game {
 	
     private Collection<RNANucleotide> floatingRNA = new LinkedList<RNANucleotide>();
     private Collection<RNANucleotide> unusedRNA = new Stack<RNANucleotide>();
+
+    public List<DNANucleotide> getBackboneDNA() { return backboneDNA; }
+
     private List<DNANucleotide> backboneDNA = new LinkedList<DNANucleotide>();
     private static final int TOUCH_ACCURACY = 50; // px
     private static final int SNAP_ACCURACY = 50; // px
@@ -25,7 +28,9 @@ public class Game {
 
     public Resources getResources() { return c.getResources(); }
 
-    private static final String DNA_input = "gctacaatcaaaaaccatcagcaagcaggaaggttattgtttcaacatggccctgtggat";
+    private static final String DNAInput = "gctacaatcaaaaaccatcagcaagcaggaaggttattgtttcaacatggccctgtggat";
+
+    private Vector<String> splitInput;
 
     private Paint paint = new Paint();
     
@@ -37,7 +42,8 @@ public class Game {
         paint.setColor(Color.BLACK);
         paint.setTextSize(64);
 
-        generateGamePieces(displayWidth() / 50);
+        splitInput = split(DNAInput);
+        generateGamePieces();
     }
     
     /* Called regularly by main loop */
@@ -113,7 +119,7 @@ public class Game {
     	return State.Acceptable;
     }
     
-    private int displayWidth() {return c.getResources().getDisplayMetrics().widthPixels; }
+    protected int displayWidth() {return c.getResources().getDisplayMetrics().widthPixels; }
     
     private int displayHeight()
     {
@@ -151,9 +157,21 @@ public class Game {
     	if(nearest != null && !nearest.snapped())
     		rna.snap(nearest);
     }
-
-    protected void generateGamePieces(int numberToGen)
+    
+    private Vector<String> split(String s)
     {
+        String split;
+        Vector<String> val = new Vector<String>(s.length()/3);
+        for (int i = 0; i < s.length()/3; i++)
+        {
+            val.add(i,s.substring(i*3,(i*3)+2));
+        }
+        return val;
+    }
+
+    protected void generateGamePieces()
+    {
+        int numberToGen = DNAInput.length();
         DNANucleotide dna;
         RNANucleotide rna;
         for (int i = 0; i <numberToGen;i++)
@@ -161,44 +179,44 @@ public class Game {
             dna = new DNANucleotide(this, i);
             if (!already_exists(dna.type()))
             {
-                 rna = new RNANucleotide(this,dna.type(),displayWidth());
+                 rna = new RNANucleotide(this,dnaToRNA(dna.type()));
             }
             else
             {
-                rna = new RNANucleotide(this, displayWidth());
+                rna = new RNANucleotide(this);
             }
             backboneDNA.add(dna);
             floatingRNA.add(rna);
 
             // Add an extra bit of RNA
-            floatingRNA.add(new RNANucleotide(this,dna.type(),displayWidth()));
+            floatingRNA.add(new RNANucleotide(this,dnaToRNA(dna.type())));
         }
     }
 
-    //TODO make this return an actual boolean, based on whether there is that type already in the floatingRNA
     protected boolean already_exists(char c)
     {
-        char rna_type;
-        switch (c)
-        {
-            case 'A':
-                rna_type = 'U';
-                break;
-            case 'C':
-                rna_type = 'G';
-                break;
-            case 'G':
-                rna_type = 'C';
-                break;
-            default:
-                rna_type = 'A';
-                break;
-        }
+        char rna_type = dnaToRNA(c);
+
         for (RNANucleotide rna : floatingRNA)
         {
             if (rna.type(rna_type))
                 return true;
         }
         return false;
+    }
+
+    private char dnaToRNA(char c)
+    {
+        switch (c)
+        {
+            case 'a':
+                return 'u';
+            case 'c':
+                return 'g';
+            case 'g':
+                return 'c';
+            default:
+                return 'a';
+        }
     }
 }

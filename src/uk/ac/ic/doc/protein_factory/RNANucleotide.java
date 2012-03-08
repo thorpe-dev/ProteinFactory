@@ -3,7 +3,6 @@ package uk.ac.ic.doc.protein_factory;
 import java.lang.reflect.Field;
 import java.util.Random;
 
-import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
@@ -14,18 +13,18 @@ public class RNANucleotide extends Nucleotide {
     private boolean touched = false;
     private DNANucleotide snappedTo = null;
     
-	public RNANucleotide(Game g, int displayWidth) {
+	public RNANucleotide(Game g) {
 		super(g);
-        this.x = displayWidth - g.getGen().nextInt(2 * displayWidth/3);
+        this.x = g.displayWidth() - g.getGen().nextInt(2 * g.displayWidth()/3);
         this.y = g.getGen().nextInt(200) + 120;
         this.type = randomType(g.getGen());
         this.bitmap = BitmapFactory.decodeResource(g.getResources(), generateNucleotide(R.drawable.class, this.type, randomColor(g.getGen())));
 	}
     
-    public RNANucleotide(Game g, char type, int displayWidth)
+    public RNANucleotide(Game g, char type)
     {
         super(g);
-        this.x = displayWidth - g.getGen().nextInt(2 * displayWidth/3);
+        this.x = g.displayWidth() - g.getGen().nextInt(2 * g.displayWidth()/3);
         this.y = g.getGen().nextInt(200) + 120;
         this.type = type;
         this.bitmap = BitmapFactory.decodeResource(g.getResources(),generateNucleotide(R.drawable.class,type, randomColor(g.getGen())));
@@ -58,16 +57,12 @@ public class RNANucleotide extends Nucleotide {
         switch (gen.nextInt(4))
         {
         case 0:
-        	this.type = 'A';
             return 'a';
         case 1:
-        	this.type = 'C';
             return 'c';
         case 2:
-        	this.type = 'G';
             return 'g';
         default:
-        	this.type = 'U';
             return 'u';
         }
     }
