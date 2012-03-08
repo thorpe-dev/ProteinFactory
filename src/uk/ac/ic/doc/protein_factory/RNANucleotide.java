@@ -2,10 +2,12 @@ package uk.ac.ic.doc.protein_factory;
 
 import java.util.Random;
 
+import android.util.Log;
+
 import uk.ac.ic.doc.protein_factory.Game.State;
 
 public class RNANucleotide extends Nucleotide {
-    //private final static String TAG = RNANucleotide.class.getSimpleName();
+    private final static String TAG = RNANucleotide.class.getSimpleName();
     private boolean touched = false;
     public RNANucleotide(Game g) {
 		this(g, randomType(g.getGen()));
@@ -14,8 +16,10 @@ public class RNANucleotide extends Nucleotide {
     public RNANucleotide(Game g, char type)
     {
         super(g, type);
-        this.x = g.getGen().nextInt(800);
-        this.y = g.getGen().nextInt(480);
+
+        // TODO: Check phone orientation - seems to affect width & height
+        this.x = g.getGen().nextInt(g.screenWidth());
+        this.y = g.getGen().nextInt(g.screenHeight() - 150) + 150;
         setColour("grey");
     }
     
