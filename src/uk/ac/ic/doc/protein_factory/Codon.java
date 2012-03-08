@@ -44,13 +44,20 @@ class Codon
     	return true;
     }
     
-    public boolean computeValidity() {
-    	Game.State state;
-    	
+    // Have all the DNA bases in this codon been attached?
+    // Doesn't matter if they're correctly attached or not
+    public boolean isComplete() {
     	for(DNANucleotide dna : nucleotides) {
     		if(!dna.attached())
     			return false;
     	}
+    	return true;
+    }
+    
+    public boolean computeValidity() {
+    	Game.State state;
+    	
+    	if(!isComplete()) return false;
     	
     	if(this.exactMatch())
     		state = Game.State.Good;
