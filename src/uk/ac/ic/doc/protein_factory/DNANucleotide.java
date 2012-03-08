@@ -9,13 +9,12 @@ import android.util.Log;
 public class DNANucleotide extends Nucleotide {
 
     private static final String TAG = RNANucleotide.class.getSimpleName();
-    private int default_ = R.drawable.a_backbone_green;
 
     private boolean snapped = false;
 
-	public DNANucleotide(Game g, int i) {
+	public DNANucleotide(Game g, char c, int i) {
         super(g);
-        this.type = randomType(g.getGen());
+        this.type = c;
         this.bitmap = BitmapFactory.decodeResource(g.getResources(), generateNucleotide(R.drawable.class, this.type, randomColor(g.getGen())));
         this.y = this.bitmap.getHeight() / 2;
         this.x = this.bitmap.getWidth() * i + this.bitmap.getWidth() / 2;
@@ -29,20 +28,22 @@ public class DNANucleotide extends Nucleotide {
     public boolean snapped() { return this.snapped; }
 
 
-    protected char randomType(Random gen)
-    {
-        switch (gen.nextInt(4))
-        {
-            case 0:
-                return 'a';
-            case 1:
-                return 'c';
-            case 2:
-                return 'g';
-            default:
-                return 't';
-        }
-    }
+// --Commented out by Inspection START (08/03/12 16:34):
+//    protected char randomType(Random gen)
+//    {
+//        switch (gen.nextInt(4))
+//        {
+//            case 0:
+//                return 'a';
+//            case 1:
+//                return 'c';
+//            case 2:
+//                return 'g';
+//            default:
+//                return 't';
+//        }
+//    }
+// --Commented out by Inspection STOP (08/03/12 16:34)
     protected String randomColor(Random gen)
     {
         switch (gen.nextInt(4))
@@ -59,7 +60,7 @@ public class DNANucleotide extends Nucleotide {
 
     }
 
-    protected int generateNucleotide(Class<?> c, char type, String color)
+    int generateNucleotide(Class<?> c, char type, String color)
     {
         try
         {
@@ -68,8 +69,9 @@ public class DNANucleotide extends Nucleotide {
         }
         catch (Exception e) 
         { 
-            Log.e(TAG,"Exception message is: " + e.getMessage()); 
-            return default_;
+            Log.e(TAG,"Exception message is: " + e.getMessage());
+            return R.drawable.a_backbone_green;
+
         }
     }
 }

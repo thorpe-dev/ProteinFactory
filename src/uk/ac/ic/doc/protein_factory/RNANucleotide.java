@@ -9,7 +9,6 @@ import android.util.Log;
 public class RNANucleotide extends Nucleotide {
     private static final String TAG = RNANucleotide.class.getSimpleName();
 
-    private int default_ = R.drawable.a_green;
     private boolean touched = false;
     private DNANucleotide snappedTo = null;
     
@@ -47,12 +46,12 @@ public class RNANucleotide extends Nucleotide {
     {
 		this.snappedTo = dna;
 		// Set correct bitmap
-		// Set DNA's correct bitmap
+		// Set DNAs correct bitmap
 		// Set DNA as snappedTo
 		// Update score
 	}
 	
-    protected char randomType(Random gen)
+    char randomType(Random gen)
     {
         switch (gen.nextInt(4))
         {
@@ -91,7 +90,8 @@ public class RNANucleotide extends Nucleotide {
         catch (Exception e) 
         { 
             Log.e(TAG,"Exception message is: " + e.getMessage());
-            return default_;
+            return R.drawable.a_green;
+
         }
     }
 }

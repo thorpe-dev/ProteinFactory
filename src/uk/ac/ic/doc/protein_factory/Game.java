@@ -7,54 +7,54 @@ import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.Log;
 import android.view.MotionEvent;
-import android.view.SurfaceView;
 
 public class Game {
-	
-    private Collection<RNANucleotide> floatingRNA = new LinkedList<RNANucleotide>();
-    private Collection<RNANucleotide> unusedRNA = new Stack<RNANucleotide>();
+
+    private final Collection<RNANucleotide> floatingRNA = new LinkedList<RNANucleotide>();
+    private final Collection<RNANucleotide> unusedRNA = new Stack<RNANucleotide>();
 
     public List<DNANucleotide> getBackboneDNA() { return backboneDNA; }
 
-    private List<DNANucleotide> backboneDNA = new LinkedList<DNANucleotide>();
+    private final LinkedList<DNANucleotide> backboneDNA = new LinkedList<DNANucleotide>();
+    private final LinkedList<Codon> codons = new LinkedList<Codon>();
     private static final int TOUCH_ACCURACY = 50; // px
     private static final int SNAP_ACCURACY = 50; // px
-    public static final int SNAP_OFFSET = 85; // px
-    protected Random gen = new Random();
-    private Context c;
+    private static final int SNAP_OFFSET = 85; // px
+    final Random gen = new Random();
+    private final Context c;
 
     public Random getGen() { return gen; }
-
     public Resources getResources() { return c.getResources(); }
+    private static final String DNAInput = "gctacaatcaaaaaccatcag";
+    private final Vector<String> splitInput;
+    private final Paint paint = new Paint();
 
-    private static final String DNAInput = "gctacaatcaaaaaccatcagcaagcaggaaggttattgtttcaacatggccctgtggat";
-
-    private Vector<String> splitInput;
-
-    private Paint paint = new Paint();
-    
     public enum State { Good, Acceptable, Bad, None }
     
-    public Game(Context c, SurfaceView s) {
-    	this.c = c;
+    private static final String TAG = Game.class.getSimpleName();
+
+    public Game(Context c) {
+        this.c = c;
 
         paint.setColor(Color.BLACK);
         paint.setTextSize(64);
 
-        splitInput = split(DNAInput);
+        splitInput = split();
         generateGamePieces();
     }
-    
+
     /* Called regularly by main loop */
     public void drawToCanvas(Canvas canvas)
     {
-    	canvas.drawColor(Color.rgb(244, 235, 141));
+        canvas.drawColor(Color.rgb(244, 235, 141));
         canvas.drawText("Score",displayWidth() - 170, displayHeight() - 20, paint);
-        
+
         for (DNANucleotide dna : backboneDNA)
-            dna.draw(canvas);
-        
+            if (dna.getX() - 50 < displayWidth())
+                dna.draw(canvas);
+
         for (RNANucleotide rna : floatingRNA)
             rna.draw(canvas);
 
@@ -64,73 +64,83 @@ public class Game {
     public void physics()
     {
         RNANucleotide rna;
+        DNANucleotide dna;
         for (Iterator<RNANucleotide> i = floatingRNA.iterator(); i.hasNext();)
         {
             rna = i.next();
-        	if(!rna.touched()) {
-        		rna.wobbleLeft();
-        		if (rna.getX() + (rna.getWidth() / 2) < 0)
+            if(!rna.touched()) {
+                rna.wobbleLeft();
+                if (rna.getX() + (rna.getWidth() / 2) < 0)
                 {
                     unusedRNA.add(rna);
                     i.remove();
                 }
-        	}
+            }
         }
 
-        for (DNANucleotide dna : backboneDNA)
+        for (Iterator<DNANucleotide> i = backboneDNA.iterator(); i.hasNext();)
+        {
+            dna = i.next();
             dna.wobbleLeft();
+            if ((dna.getX() + dna.getWidth() / 2) < 0)
+            {
+                i.remove();
+                // If we have time, change this so backbone elements get reused
+                // dna.setX(backboneDNA.getLast().getX() + backboneDNA.getLast().getWidth() / 2);
+            }
+        }
     }
-    
+
     /* Can arrive at any time */
     public void touch(MotionEvent e) {
         if (e.getAction() == MotionEvent.ACTION_DOWN) {
-        	RNANucleotide closest = (RNANucleotide) closestNucleotide((int)e.getX(), (int)e.getY(), TOUCH_ACCURACY, floatingRNA);
-        	if(closest != null)
-        		closest.setTouched(true);
+            RNANucleotide closest = (RNANucleotide) closestNucleotide((int)e.getX(), (int)e.getY(), TOUCH_ACCURACY, floatingRNA);
+            if(closest != null)
+                closest.setTouched(true);
         }
         if (e.getAction() == MotionEvent.ACTION_MOVE) {
-        	for(RNANucleotide rna : floatingRNA) {
-        		if(rna.touched()) {
-        			rna.move((int)e.getX(),(int)e.getY());
-        			attemptSnapToBackBone(rna);
-        		}
-        	}
+            for(RNANucleotide rna : floatingRNA) {
+                if(rna.touched()) {
+                    rna.move((int)e.getX(),(int)e.getY());
+                    attemptSnapToBackBone(rna);
+                }
+            }
         }
         else if (e.getAction() == MotionEvent.ACTION_UP) {
-        	for(RNANucleotide rna : floatingRNA) {
-        		if(rna.touched()) {
-        			rna.setTouched(false);
-       				attemptAttachToBackBone(rna);
-        		}
-        	}        	
+            for(RNANucleotide rna : floatingRNA) {
+                if(rna.touched()) {
+                    rna.setTouched(false);
+                    attemptAttachToBackBone(rna);
+                }
+            }
         }
     }
 
     public State match(char dna, char rna) {
-    	if(rna=='T') return State.Bad;
-    	
-    	if((dna=='G' && rna=='C') ||
-    	   (dna=='A' && rna=='U') ||
-    	   (dna=='C' && rna=='G') ||
-           (dna=='T' && rna=='A'))
-           return State.Good;
+        if(rna=='T') return State.Bad;
 
-    	// TODO: Needs a lot more work
-    	return State.Acceptable;
+        if((dna=='G' && rna=='C') ||
+                (dna=='A' && rna=='U') ||
+                (dna=='C' && rna=='G') ||
+                (dna=='T' && rna=='A'))
+            return State.Good;
+
+        // TODO: Needs a lot more work
+        return State.Acceptable;
     }
-    
-    protected int displayWidth() {return c.getResources().getDisplayMetrics().widthPixels; }
-    
+
+    int displayWidth() {return c.getResources().getDisplayMetrics().widthPixels; }
+
     private int displayHeight()
     {
         return c.getResources().getDisplayMetrics().heightPixels;
     }
-    
-	private Nucleotide closestNucleotide (int x, int y, int maxdist, Collection<? extends Nucleotide> collection)
+
+    private Nucleotide closestNucleotide (int x, int y, int maxdist, Collection<? extends Nucleotide> collection)
     {
         Nucleotide closest_rna = null;
         int closest_dist = (maxdist*maxdist); // Don't return anything further than maxdist pixels away 
-        							  // Also, magic numbers yay 
+        // Also, magic numbers yay 
         int this_dist;
         for (Nucleotide rna : collection)
         {
@@ -144,58 +154,69 @@ public class Game {
 
         return closest_rna;
     }
-	
-	
+
+
     private void attemptSnapToBackBone(RNANucleotide rna) {
-    	DNANucleotide nearest = (DNANucleotide) closestNucleotide(rna.getX(), rna.getY()-SNAP_OFFSET, SNAP_ACCURACY, backboneDNA);
-    	if(nearest != null && !nearest.snapped())
-    		rna.move(nearest.getX()-2, nearest.getY()+SNAP_OFFSET); // getX()-2 is a hack - I think the images aren't aligned properly?
+        DNANucleotide nearest = (DNANucleotide) closestNucleotide(rna.getX(), rna.getY()-SNAP_OFFSET, SNAP_ACCURACY, backboneDNA);
+        if(nearest != null && !nearest.snapped())
+            rna.move(nearest.getX()-2, nearest.getY()+SNAP_OFFSET); // getX()-2 is a hack - I think the images aren't aligned properly?
     }
-	
+
     private void attemptAttachToBackBone(RNANucleotide rna) {
-    	DNANucleotide nearest = (DNANucleotide) closestNucleotide(rna.getX(), rna.getY()-SNAP_OFFSET, SNAP_ACCURACY, backboneDNA);
-    	if(nearest != null && !nearest.snapped())
-    		rna.snap(nearest);
+        DNANucleotide nearest = (DNANucleotide) closestNucleotide(rna.getX(), rna.getY()-SNAP_OFFSET, SNAP_ACCURACY, backboneDNA);
+        if(nearest != null && !nearest.snapped())
+            rna.snap(nearest);
     }
-    
-    private Vector<String> split(String s)
+
+    private Vector<String> split()
     {
-        String split;
-        Vector<String> val = new Vector<String>(s.length()/3);
-        for (int i = 0; i < s.length()/3; i++)
+        Vector<String> val = new Vector<String>(Game.DNAInput.length()/3);
+        for (int i = 0; i < Game.DNAInput.length()/3; i++)
         {
-            val.add(i,s.substring(i*3,(i*3)+2));
+            val.add(i, Game.DNAInput.substring(i * 3, (i * 3) + 3));
         }
         return val;
     }
 
-    protected void generateGamePieces()
+    void generateGamePieces()
     {
-        int numberToGen = DNAInput.length();
-        DNANucleotide dna;
-        RNANucleotide rna;
-        for (int i = 0; i <numberToGen;i++)
+        Codon c;
+        
+        for (int i = 0; i < splitInput.size();i++)
         {
-            dna = new DNANucleotide(this, i);
-            if (!already_exists(dna.type()))
+            c = new Codon(this,splitInput.get(i),i*3);
+            codons.add(c);
+            backboneDNA.addAll(c.getNucleotides());
+        }
+
+        for (DNANucleotide d:backboneDNA)
+        {
+            Log.d(TAG, ""+d.getX());
+        }
+
+        RNANucleotide rna;
+        for (DNANucleotide dna : backboneDNA)
+        {
+            if (!already_exists(dnaToRNA(dna.type())))
             {
-                 rna = new RNANucleotide(this,dnaToRNA(dna.type()));
+                rna = new RNANucleotide(this,dnaToRNA(dna.type()));
             }
             else
             {
                 rna = new RNANucleotide(this);
             }
-            backboneDNA.add(dna);
-            floatingRNA.add(rna);
 
-            // Add an extra bit of RNA
-            floatingRNA.add(new RNANucleotide(this,dnaToRNA(dna.type())));
+            floatingRNA.add(rna);
+            
+            if (gen.nextBoolean())
+            {
+                floatingRNA.add(new RNANucleotide(this));
+            }
         }
     }
 
-    protected boolean already_exists(char c)
+    boolean already_exists(char rna_type)
     {
-        char rna_type = dnaToRNA(c);
 
         for (RNANucleotide rna : floatingRNA)
         {

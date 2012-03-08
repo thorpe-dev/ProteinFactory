@@ -1,18 +1,20 @@
 package uk.ac.ic.doc.protein_factory;
 
 
-import java.util.Vector;
+import java.util.LinkedList;
 
-public class Codon
+class Codon
 {
-    private Vector<Nucleotide> nucleotides = new Vector<Nucleotide>(3);
+    public LinkedList<DNANucleotide> getNucleotides() { return nucleotides; }
 
-    public Codon(Game g,String s)
+    private LinkedList<DNANucleotide> nucleotides = new LinkedList<DNANucleotide>();
+
+    public Codon(Game g,String s, int pos)
     {
         assert (s.length() == 3);
         for (int i = 0; i < s.length(); i++)
         {
-            nucleotides.add(i,new DNANucleotide(g,s.charAt(i)));
+            nucleotides.add(new DNANucleotide(g,s.charAt(i),pos + i));
         }
 
     }

@@ -11,15 +11,15 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 {
     private static final String TAG = MainGamePanel.class.getSimpleName();
 	
-    private MainThread mainThread;
-    private Game game;
+    private final MainThread mainThread;
+    private final Game game;
     
     public MainGamePanel(Context c)
     {
         super(c);
         
-        game = new Game(c, this);
-        mainThread = new MainThread(getHolder(),this, game);
+        game = new Game(c);
+        mainThread = new MainThread(getHolder(), game);
 
         getHolder().addCallback(this);
         setFocusable(true);

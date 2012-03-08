@@ -4,23 +4,24 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
 
-public abstract class Nucleotide {
+abstract class Nucleotide {
 
     public int getWidth() {
         return bitmap.getWidth();
     }
 
-    protected Bitmap bitmap; // The actual bitmap image
-    protected int x;
-    protected int y; // X and Y Co-ordinates of the image
-    protected Game game;
-    protected char type;
+    Bitmap bitmap; // The actual bitmap image
+    int x;
+    int y; // X and Y Co-ordinates of the image
+    final Game game;
+    char type;
     
-    public Nucleotide(Game g) { this.game = g;}
+    Nucleotide(Game g) { this.game = g;}
 
     public abstract void wobbleLeft();
     
 	public int getX() { return x; }
+    public void setX(int x) {this.x = x;}
 	public int getY() { return y; }
 	public char type() { return type; }
 	public boolean type(char t) { return (t == type); }

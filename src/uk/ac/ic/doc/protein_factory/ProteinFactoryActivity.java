@@ -6,13 +6,6 @@ import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 
-/**
- * Created by IntelliJ IDEA.
- * User: Michael
- * Date: 02/03/12
- * Time: 16:27
- * To change this template use File | Settings | File Templates.
- */
 public class ProteinFactoryActivity extends Activity {
 
     private static final String TAG = ProteinFactoryActivity.class.getSimpleName();

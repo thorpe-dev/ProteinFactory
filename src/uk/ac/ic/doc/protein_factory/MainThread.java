@@ -6,24 +6,15 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 
 
-/**
- * Created by IntelliJ IDEA.
- * User: Michael
- * Date: 02/03/12
- * Time: 17:05
- * To change this template use File | Settings | File Templates.
- */
-public class MainThread extends Thread {
+class MainThread extends Thread {
 	private static final int LOOPTIME = 20; // Nominal (minimum) loop time in ms
 	private static final String TAG = MainThread.class.getSimpleName();
-    protected boolean running;
-    protected SurfaceHolder holder;
-    protected MainGamePanel panel;
-    private Game game;
+    private boolean running;
+    private final SurfaceHolder holder;
+    private final Game game;
 
-    public MainThread(SurfaceHolder h, MainGamePanel p, Game g) {
+    public MainThread(SurfaceHolder h, Game g) {
         this.holder = h;
-        this.panel = p;
         this.game = g;
     }
     
