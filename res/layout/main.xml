@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:background="@drawable/home_screen">
+    <Button android:id="@+id/new_game"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_marginTop="260dip"
+            android:layout_marginLeft="30dip"
+            android:onClick="newGame"
+            android:text="New Game"
+            >
+            </Button>
+    <Button android:id="@+id/instructions"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_marginTop="260dip"
+            android:layout_marginLeft="90dip"
+            android:text="Instructions"
+            android:onClick="viewInstructions"
+            >
+    </Button>
+</LinearLayout>
