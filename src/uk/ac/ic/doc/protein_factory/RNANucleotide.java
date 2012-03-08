@@ -13,11 +13,7 @@ public class RNANucleotide extends Nucleotide {
     private DNANucleotide snappedTo = null;
     
 	public RNANucleotide(Game g) {
-		super(g);
-        this.x = g.displayWidth() - g.getGen().nextInt(2 * g.displayWidth()/3);
-        this.y = g.getGen().nextInt(200) + 120;
-        this.type = randomType(g.getGen());
-        this.bitmap = BitmapFactory.decodeResource(g.getResources(), generateNucleotide(R.drawable.class, this.type, randomColor(g.getGen())));
+        this(g,randomType(g.getGen()));
 	}
     
     public RNANucleotide(Game g, char type)
@@ -51,7 +47,7 @@ public class RNANucleotide extends Nucleotide {
 		// Update score
 	}
 	
-    char randomType(Random gen)
+    static char randomType(Random gen)
     {
         switch (gen.nextInt(4))
         {
