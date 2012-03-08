@@ -12,7 +12,7 @@ public class RNANucleotide extends Nucleotide {
 
     private int default_ = R.drawable.a_green;
     private boolean touched = false;
-    private DNANucleotide snapped = null;
+    private DNANucleotide snappedTo = null;
     
 	public RNANucleotide(Context c, Game g, Random gen, int displayWidth) {
 		super(g);
@@ -32,7 +32,7 @@ public class RNANucleotide extends Nucleotide {
     }
 	
 	public void wobbleLeft() {
-		if(snapped != null) {
+		if(snappedTo != null) {
 			x--;
 		}
 		else {
@@ -41,19 +41,14 @@ public class RNANucleotide extends Nucleotide {
 		}
 	}
 
-	public void move(int x, int y) {
-		this.x = x;
-		this.y = y;
-	}
-	
 	public boolean touched() { return touched; }
 	public void setTouched(boolean touched) { this.touched = touched; }
 	
 	public void snap(DNANucleotide dna, int snap_offset) {
-		this.snapped = dna;
+		this.snappedTo = dna;
 		// Set correct bitmap
 		// Set DNA's correct bitmap
-		// Set DNA as snapped
+		// Set DNA as snappedTo
 		// Update score
 
 		

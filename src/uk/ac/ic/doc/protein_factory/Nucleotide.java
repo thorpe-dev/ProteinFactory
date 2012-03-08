@@ -23,7 +23,7 @@ public abstract class Nucleotide {
 	public int getX() { return x; }
 	public int getY() { return y; }
 	public char type() { return type; }
-	public boolean type(char t) { return (t == type); };
+	public boolean type(char t) { return (t == type); }
 	
 	//public abstract void setBitmap(Game.State state);
 	
@@ -32,6 +32,11 @@ public abstract class Nucleotide {
         int distY = this.y - y;
         return ((distX * distX) + (distY * distY));
 	}
+
+    public void move(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
 
     public void draw(Canvas canvas) {
         canvas.drawBitmap(bitmap, x - (bitmap.getWidth() / 2), y - (bitmap.getHeight() / 2), null);

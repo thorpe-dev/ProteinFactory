@@ -14,7 +14,6 @@ public class Game {
     private Collection<RNANucleotide> floatingRNA = new LinkedList<RNANucleotide>();
     private Stack<RNANucleotide> unusedRNA = new Stack<RNANucleotide>();
     private List<DNANucleotide> backboneDNA = new LinkedList<DNANucleotide>();
-    private static final int rnaCount = 20;
     private static final int TOUCH_ACCURACY = 50; // px
     private static final int SNAP_ACCURACY = 50; // px
     public static final int SNAP_OFFSET = 85; // px
@@ -50,8 +49,7 @@ public class Game {
     /* Called regularly by main loop */
     public void physics()
     {
-        Collection<RNANucleotide> rnaToKill = new Stack<RNANucleotide>();
-        RNANucleotide rna;        
+        RNANucleotide rna;
         for (Iterator<RNANucleotide> i = floatingRNA.iterator(); i.hasNext();)
         {
             rna = i.next();
@@ -64,14 +62,6 @@ public class Game {
                 }
         	}
         }
-
-        // Clean up RNA that went off the screen
-        /*for (RNANucleotide rna : rnaToKill)
-        {
-        	unusedRNA.push(rna);
-            floatingRNA.remove(rna); // TODO: Improve; this is O(n) for a linked list :(
-                                     // TODO: M - I don't see how improve it, keeping the index of the element would require updating it?
-        }*/
 
         for (DNANucleotide dna : backboneDNA)
             dna.wobbleLeft();
@@ -162,7 +152,6 @@ public class Game {
         RNANucleotide rna;
         for (int i = 0; i <numberToGen;i++)
         {
-            int count = gen.nextInt(2) + 1;
             dna = new DNANucleotide(c,this,gen, i);
             if (!already_exists(dna.type()))
             {
@@ -201,7 +190,7 @@ public class Game {
         }
         for (RNANucleotide rna : floatingRNA)
         {
-            if (rna.type() == rna_type)
+            if (rna.type(rna_type))
                 return true;
         }
         return false;
