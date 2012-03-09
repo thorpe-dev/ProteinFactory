@@ -242,11 +242,12 @@ public final class Game {
         
         end.setX(c.getNucleotides().getLast().getX() + end.getWidth()/2);
 
-        for (int i=0;i<10;i++)
+        for (int i=0;i<DNAInput.length();i++)
         {
         	synchronized(floatingRNA) {
-	        	// And also some random ones
-	            floatingRNA.add(new RNANucleotide(this));
+        		for(int j=0;j<3;j++) {
+        			floatingRNA.add(new RNANucleotide(this));
+        		}
         	}
         }
     }
