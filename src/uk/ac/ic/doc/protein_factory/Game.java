@@ -245,9 +245,8 @@ public final class Game {
         for (int i=0;i<DNAInput.length();i++)
         {
         	synchronized(floatingRNA) {
-        		for(int j=0;j<3;j++) {
-        			floatingRNA.add(new RNANucleotide(this));
-        		}
+        		floatingRNA.add(new RNANucleotide(this));
+        		floatingRNA.add(new RNANucleotide(this));
         	}
         }
     }
