@@ -7,7 +7,9 @@
               android:layout_gravity="center">
     <ScrollView
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
+            android:layout_height="fill_parent"
+            android:paddingLeft="120px"
+            android:paddingRight="120px">
             <TextView
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"

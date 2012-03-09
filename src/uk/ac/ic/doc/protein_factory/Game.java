@@ -5,25 +5,27 @@ import java.util.*;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.*;
-import android.util.Log;
 import android.view.MotionEvent;
 
-public class Game {
+public final class Game {
 
     private final Collection<RNANucleotide> floatingRNA = Collections.synchronizedList(new LinkedList<RNANucleotide>());
     private final LinkedList<DNANucleotide> backboneDNA = new LinkedList<DNANucleotide>();
-    private static final String DNAInput = "atggccctgtggatgcgcttcctgcccctgctggccctgctcttcctctgggag";
+    private static final String DNAInput = "atggccctgtggatgcgcttcctgcccctgctggcc";
     private final Vector<String> splitInput;
 
     private static final int TOUCH_ACCURACY = 50; // px
     private static final int SNAP_ACCURACY = 50; // px
     private static final int SNAP_OFFSET = 85; // px
 
+    private static StartNucleotide start;
+    private static StartNucleotide end;
+
     final Random gen = new Random();
     public static final CodonGroups codonGroups = new CodonGroups(); 
     private final Context c;
 
-    private final Paint paint = new Paint();
+    private final Paint inGamePaint = new Paint();
     private final Bitmap background;
 
     public Score score = new Score();
@@ -41,8 +43,8 @@ public class Game {
 
         assert(DNAInput.length()%3==0);
         
-        paint.setColor(Color.BLACK);
-        paint.setTextSize(64);
+        inGamePaint.setColor(Color.BLACK);
+        inGamePaint.setTextSize(64);
         background = BitmapFactory.decodeResource(getResources(), R.drawable.background_texture);
 
         splitInput = split();
@@ -52,7 +54,7 @@ public class Game {
     /* Called regularly by main loop */
     public void drawToCanvas(Canvas canvas)
     {
-        canvas.drawBitmap(background, 0, 0, paint);
+        canvas.drawBitmap(background, 0, 0, null);
 
 		synchronized(floatingRNA) {
         	for (RNANucleotide rna : floatingRNA)
@@ -60,11 +62,17 @@ public class Game {
 		}
 
         for (DNANucleotide dna : backboneDNA)
-            if (dna.getX() - 50 < screenWidth())
+            if (dna.getX() - dna.getWidth() < screenWidth())
                 dna.draw(canvas);
+        
+        if ((start.getX() - start.getWidth() < screenWidth()) || !start.isNoLongerRender())
+            start.draw(canvas);
+        
+        if (end.getX() - end.getWidth() < screenWidth())
+            end.draw(canvas);
 
-        canvas.drawText("Score: "+score.score(), screenWidth() - 270, screenHeight() - 10, paint);
-        canvas.drawText("Lives: " + score.livesLeft(), 10, screenHeight()-10, paint);
+        canvas.drawText("Score: "+score.score(), screenWidth() - 270, screenHeight() - 10, inGamePaint);
+        canvas.drawText("Lives: " + score.livesLeft(), 10, screenHeight()-10, inGamePaint);
 
     }
 
@@ -100,6 +108,10 @@ public class Game {
             	i.remove();
             }
         }
+        start.setNoLongerRender((start.getX() + start.getWidth() /2) < 0);
+        if (!start.isNoLongerRender())
+            start.wobbleLeft();
+        end.wobbleLeft();
     }
 
     /* Can arrive at any time */
@@ -132,13 +144,22 @@ public class Game {
     
     // Called once at the end of the game
     public void drawScores(Canvas canvas) {
-    	canvas.drawBitmap(background, 0, 0, paint);
+    	Paint paint = new Paint();
+    	paint.setTextSize(32);
+    	canvas.drawBitmap(background, 0, 0, null);
     	// green Correct codons
     	// orange Silent mutations
     	// red Missense mutations
     	// Deletions
-        canvas.drawText("Score: " + score.score(), screenWidth() - 270, screenHeight() - 10, paint);
-        canvas.drawText("Lives: " + score.livesLeft(), 10, screenHeight()-10, paint);
+    	
+    	paint.setColor(Color.rgb(50, 50, 50));
+    	canvas.drawText("Game Over!", screenWidth()/3, screenHeight()/9, paint);
+    	canvas.drawText("Correct codons: " + score.goodCodons(), screenWidth()/3, 3*screenHeight()/9, paint);
+    	canvas.drawText("Silent mutations: " + score.silentMutations(), screenWidth()/3, 4*screenHeight()/9, paint);
+    	canvas.drawText("Missense mutations: " + score.missenseMutations(), screenWidth()/3, 5*screenHeight()/9, paint);
+    	canvas.drawText("Deletions: " + score.deletions(), screenWidth()/3, 6*screenHeight()/9, paint);
+        canvas.drawText("Score: " + score.score(), screenWidth()/3, 7*screenHeight()/9, paint);
+        canvas.drawText("Lives: " + score.livesLeft(), screenWidth()/3, 8*screenHeight()/9, paint);
     }
 
     public int screenWidth() {return c.getResources().getDisplayMetrics().widthPixels; }
@@ -190,17 +211,21 @@ public class Game {
     {
         Codon c;
 
+        start = new StartNucleotide(this,true);
+        end = new StartNucleotide(this,false);
+
         c = new Codon(this,"ATG",0);
+        start.setX(c.getNucleotides().get(0).getX() - start.getWidth()/2);
         backboneDNA.addAll(c.getNucleotides());
         for (int i = 0; i < splitInput.size();i++)
         {
-            c = new Codon(this,splitInput.get(i),i*3 + 3);
+            c = new Codon(this,splitInput.get(i),(i*3) + 3);
             backboneDNA.addAll(c.getNucleotides());
         }
         
-        int end = gen.nextInt(3);
+        int e = gen.nextInt(3);
         String endSequence;
-        switch (end)
+        switch (e)
         {
             case 0:
                 endSequence = "TAA";
@@ -214,6 +239,8 @@ public class Game {
         }
 
         c = new Codon(this,endSequence,splitInput.size()*3+3);
+        
+        end.setX(c.getNucleotides().getLast().getX() + end.getWidth()/2);
 
         for (int i=0;i<10;i++)
         {

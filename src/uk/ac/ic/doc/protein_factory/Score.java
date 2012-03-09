@@ -45,4 +45,10 @@ public class Score {
 	public int silentMutations() {
 		return silentMutations;
 	}
+	public int missenseMutations() {
+		return missenseMutations;
+	}
+	public int deletions() {
+		return deletions;
+	}
 }
