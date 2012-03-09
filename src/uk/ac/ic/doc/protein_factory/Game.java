@@ -10,7 +10,7 @@ import android.view.MotionEvent;
 public final class Game {
 
     private final Collection<RNANucleotide> floatingRNA = Collections.synchronizedList(new LinkedList<RNANucleotide>());
-    private final LinkedList<DNANucleotide> backboneDNA = new LinkedList<DNANucleotide>();
+    private final AbstractSequentialList<DNANucleotide> backboneDNA = new LinkedList<DNANucleotide>();
     private static final String DNAInput = "gctacaatcaaaaaccatcag";
     private final Vector<String> splitInput;
 
@@ -238,10 +238,8 @@ public final class Game {
         	synchronized(floatingRNA) {
 	        	// Generate an RNA piece corresponding to each DNA piece
 	        	floatingRNA.add(new RNANucleotide(this,dnaToRNA(dna.type())));
-	        	
-	        	// And also some random ones
-	            floatingRNA.add(new RNANucleotide(this));
-        	}
+            }
+            
         }
     }
 

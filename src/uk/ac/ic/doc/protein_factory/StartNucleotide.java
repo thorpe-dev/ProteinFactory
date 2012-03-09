@@ -30,11 +30,6 @@ public class StartNucleotide extends Nucleotide {
         super(g,'q');
         this.start=start;
         setColour(getTerminal());
-
-        if (start)
-        Log.d(TAG,"starting start nucleotide");
-        else
-            Log.d(TAG,"starting end nucleotide");
     }
 
     public void wobbleLeft()
