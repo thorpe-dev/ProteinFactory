@@ -212,7 +212,7 @@ public class Game {
                 break;
         }
 
-        c = new Codon(this,endSequence,0);
+        c = new Codon(this,endSequence,i*3+3);
 
         for (DNANucleotide dna : backboneDNA)
         {
