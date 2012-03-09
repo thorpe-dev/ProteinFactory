@@ -23,7 +23,7 @@ public class RNANucleotide extends Nucleotide {
     protected String partial_bitmap_filename() { return "_"; }
 	
 	public void wobbleLeft() {
-		if(attached) {			Game.State state;
+		if(attached) {
 			x--;
 		}
 		else {
@@ -41,11 +41,14 @@ public class RNANucleotide extends Nucleotide {
 		dna.attach(this);
 		
 		// If codon isn't complete yet, set our own colours
-		if(!dna.computeCodonValidity()) {
-	        if(dna.matchesPartner()) dna.setState(State.Good);
-	        else dna.setState(State.Bad);
-		}
-
+        if(dna.matchesPartner()) {
+        	dna.setState(State.Good);
+        	game.score.basePairMatch(State.Good);
+        }
+        else
+        	dna.setState(State.Bad);
+        
+		dna.computeCodonValidity();
 
 		
 		

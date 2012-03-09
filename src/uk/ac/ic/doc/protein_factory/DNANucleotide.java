@@ -9,7 +9,7 @@ public class DNANucleotide extends Nucleotide {
         super(g, type);
         setColour("grey");
         this.y = this.bitmap.getHeight() / 2;
-        this.x = this.bitmap.getWidth() * i + this.bitmap.getWidth() / 2;
+        this.x = this.game.screenWidth() + this.bitmap.getWidth() * i + this.bitmap.getWidth() / 2;
         this.codon = codon;
     }
 

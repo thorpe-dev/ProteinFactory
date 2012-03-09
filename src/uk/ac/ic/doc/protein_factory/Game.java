@@ -27,8 +27,8 @@ public class Game {
 
     private final Paint paint = new Paint();
     private final Bitmap background;
-    
-    private int score;
+
+    public Score score = new Score();
 
     public Random getGen() { return gen; }
     public Resources getResources() { return c.getResources(); }
@@ -47,8 +47,6 @@ public class Game {
 
         splitInput = split();
         generateGamePieces();
-        score = 0;
-
     }
 
     /* Called regularly by main loop */
@@ -73,7 +71,7 @@ public class Game {
                 if (dna.getX() - 50 < screenWidth())
                     dna.draw(canvas);
 
-            canvas.drawText("Score = "+score,screenWidth() - 280, screenHeight() - 20, paint);
+            canvas.drawText("Score: "+score.score(), screenWidth() - 280, screenHeight() - 20, paint);
         }
 
     }
@@ -146,6 +144,11 @@ public class Game {
     public int screenWidth() {return c.getResources().getDisplayMetrics().widthPixels; }
     public int screenHeight() { return c.getResources().getDisplayMetrics().heightPixels; }
 
+
+    public void updateCodonScore(State state) {
+
+    }
+    
     private Nucleotide closestNucleotide (int x, int y, int maxdist, Collection<? extends Nucleotide> collection)
     {
         Nucleotide closest_rna = null;
@@ -238,5 +241,19 @@ public class Game {
     		rnaCodon += dnaToRNA(codon.charAt(i));
     	}
     	return rnaCodon;
+    }
+    
+    private boolean gameOver() {
+    	if(score.livesLeft() <= 0)
+    		return true;
+    	
+    	if(backboneDNA.isEmpty())
+    		return true;
+    	
+    	for(DNANucleotide dna : backboneDNA) {
+    		if(!dna.attached())
+    			return false;
+    	}
+    	return true;
     }
 }

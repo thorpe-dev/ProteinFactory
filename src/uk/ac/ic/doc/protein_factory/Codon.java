@@ -62,10 +62,12 @@ class Codon
     		state = Game.State.Good;
     	else if(Game.codonGroups.sameGroup(Game.dnaToRNA(this.toString()), this.rnaString()))
     		state = Game.State.Acceptable;
-    	else
+    	else {
     		state = Game.State.Bad;
+    	}
     	
     	// Update score
+    	game.updateCodonScore(state);
     	
 		for(DNANucleotide dna : nucleotides) {
 			dna.setState(state);
