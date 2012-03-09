@@ -15,16 +15,4 @@ public class InstructionScreen extends Activity {
         setContentView(R.layout.instructions);
         super.onCreate(savedInstanceState);
     }
-    
-    public void home(View v)
-    {
-        Intent i = new Intent(InstructionScreen.this,SplashScreen.class);
-        InstructionScreen.this.startActivity(i);
-    }
-    
-    public void play(View v)
-    {
-        Intent i = new Intent(InstructionScreen.this, ProteinFactoryActivity.class);
-        InstructionScreen.this.startActivity(i);
-    }
 }

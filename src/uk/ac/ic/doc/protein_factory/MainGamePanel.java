@@ -26,16 +26,6 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
         setFocusable(true);
     }
 
-    public MainGamePanel(Context c, AttributeSet s)
-    {
-        super(c,s);
-        game = new Game(c);
-        mainThread = new MainThread(getHolder(), game);
-
-        getHolder().addCallback(this);
-        setFocusable(true);
-    }
-
     @Override
     public void surfaceChanged(SurfaceHolder h, int format, int width, int height)
     {

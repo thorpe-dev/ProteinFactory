@@ -5,9 +5,7 @@ import java.util.*;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
+import android.graphics.*;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.Button;
@@ -30,6 +28,9 @@ public class Game {
     private final Context c;
 
     private final Paint paint = new Paint();
+    private final Bitmap background;
+    
+    private int score;
 
     public Random getGen() { return gen; }
     public List<DNANucleotide> getBackboneDNA() { return backboneDNA; }
@@ -45,16 +46,18 @@ public class Game {
 
         paint.setColor(Color.BLACK);
         paint.setTextSize(64);
+        background = BitmapFactory.decodeResource(getResources(),R.drawable.background_texture);
 
         splitInput = split();
         generateGamePieces();
+        score = 0;
 
     }
 
     /* Called regularly by main loop */
     public void drawToCanvas(Canvas canvas)
     {
-        canvas.drawColor(Color.rgb(244, 235, 141));
+        canvas.drawBitmap(background, 0, 0, paint);
 
         // If the backbone is empty, then the player has successfully strung together all the DNA
         if (backboneDNA.isEmpty())
@@ -72,7 +75,7 @@ public class Game {
                 if (dna.getX() - 50 < screenWidth())
                     dna.draw(canvas);
 
-            canvas.drawText("Score",screenWidth() - 170, screenHeight() - 20, paint);
+            canvas.drawText("Score = "+score,screenWidth() - 280, screenHeight() - 20, paint);
         }
 
     }
@@ -144,11 +147,21 @@ public class Game {
 
         Log.d(TAG, "Matching " + dna + " with " +  rna);
 
-        if(rna == dnaToRNA(dna)) return State.Good;
-        else if(rna=='T') return State.Bad;
+        if(rna == dnaToRNA(dna))
+        {
+            score+=2;
+            return State.Good;
+        }
+        else if(rna=='T')
+            return State.Bad;
             // NOT QUITE - NEED TO COMPARE CODONS, NOT DNA/RNA
             //else if(codonGroups.sameGroup(dnaObj, rnaObj)) return State.Acceptable;
-        else return State.Bad;
+        else
+        {
+
+            score++;
+            return State.Bad;
+        }
     }
 
     public int screenWidth() {return c.getResources().getDisplayMetrics().widthPixels; }
