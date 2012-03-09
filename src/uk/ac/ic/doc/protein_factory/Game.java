@@ -5,10 +5,9 @@ import java.util.*;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.*;
-import android.util.Log;
 import android.view.MotionEvent;
 
-public class Game {
+public final class Game {
 
     private final Collection<RNANucleotide> floatingRNA = Collections.synchronizedList(new LinkedList<RNANucleotide>());
     private final LinkedList<DNANucleotide> backboneDNA = new LinkedList<DNANucleotide>();
@@ -18,6 +17,9 @@ public class Game {
     private static final int TOUCH_ACCURACY = 50; // px
     private static final int SNAP_ACCURACY = 50; // px
     private static final int SNAP_OFFSET = 85; // px
+
+    private static StartNucleotide start;
+    private static StartNucleotide end;
 
     final Random gen = new Random();
     public static final CodonGroups codonGroups = new CodonGroups(); 
@@ -66,8 +68,15 @@ public class Game {
 			}
 
             for (DNANucleotide dna : backboneDNA)
-                if (dna.getX() - 50 < screenWidth())
+                if (dna.getX() - dna.getWidth() < screenWidth())
                     dna.draw(canvas);
+            
+            if ((start.getX() - start.getWidth() < screenWidth()) || !start.isNoLongerRender())
+                start.draw(canvas);
+            
+            if (end.getX() - end.getWidth() < screenWidth())
+                end.draw(canvas);
+            
 
             canvas.drawText("Score: "+score.score(), screenWidth() - 280, screenHeight() - 20, paint);
             canvas.drawText("Lives: " + score.livesLeft(), 10, screenHeight(), paint);
@@ -109,6 +118,10 @@ public class Game {
                 // dna.setX(backboneDNA.getLast().getX() + backboneDNA.getLast().getWidth() / 2);
             }
         }
+        start.setNoLongerRender((start.getX() + start.getWidth() /2) < 0);
+        if (!start.isNoLongerRender())
+            start.wobbleLeft();
+        end.wobbleLeft();
     }
 
     /* Can arrive at any time */
@@ -189,17 +202,21 @@ public class Game {
         Codon c;
         int i;
 
+        start = new StartNucleotide(this,true);
+        end = new StartNucleotide(this,false);
+
         c = new Codon(this,"ATG",0);
+        start.setX(c.getNucleotides().get(0).getX() - start.getWidth()/2);
         backboneDNA.addAll(c.getNucleotides());
         for (i = 0; i < splitInput.size();i++)
         {
-            c = new Codon(this,splitInput.get(i),i*3 + 3);
+            c = new Codon(this,splitInput.get(i),(i*3) + 3);
             backboneDNA.addAll(c.getNucleotides());
         }
         
-        int end = gen.nextInt(3);
+        int e = gen.nextInt(3);
         String endSequence;
-        switch (end)
+        switch (e)
         {
             case 0:
                 endSequence = "TAA";
@@ -213,6 +230,8 @@ public class Game {
         }
 
         c = new Codon(this,endSequence,i*3+3);
+        
+        end.setX(c.getNucleotides().getLast().getX() + end.getWidth()/2);
 
         for (DNANucleotide dna : backboneDNA)
         {

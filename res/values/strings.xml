@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">Protein Factory</string>
     <string name="score">SCORE</string>
-    <string name="instructions">HELLO YES THIS IS DOG\nHELLO YES THIS IS DOG\nHELLO YES THIS IS DOG\nHELLO YES THIS IS DOG\nHELLO YES THIS IS DOG\nHELLO YES THIS IS DOG\nHELLO YES THIS IS DOG\nHELLO YES THIS IS DOG\nHELLO YES THIS IS DOG\nHELLO YES THIS IS DOG\nHELLO YES THIS IS DOG\nHELLO YES THIS IS DOG\nHELLO YES THIS IS DOG\nHELLO YES THIS IS DOG\nHELLO YES THIS IS DOG\nHELLO YES THIS IS DOG\nHELLO YES THIS IS DOG\nHELLO YES THIS IS DOG\nHELLO YES THIS IS DOG\n</string>
+    <string name="instructions">Enter the cell’s nucleus and start transcribing DNA! Grab the floating RNA nucleotides and drag them to their corresponding nucleotides on the DNA chain, as fast as you can.\n\n\n
+        You are taking on RNA polymerase’s job so you better be good! Remember, Adenine binds with Uracil with a double bond and Cytosine binds with Guanine with a triple bond. Be careful not to provoke mutations!\n\n\n
+        Silent mutations (orange) won’t cost you a life as they do not affect the amino acid sequence formed later.\n\n\n
+        However, if the mutation is missense or nonsense (red), you will lose a life as this will have serious consequences on the coding for the amino acid!\n\n\n
+        If you are not quick enough and miss a nucleotide, you will provoke a mutation called deletion, and there goes another life! You have three, so good luck!\n\n\n
+</string>
 </resources>
