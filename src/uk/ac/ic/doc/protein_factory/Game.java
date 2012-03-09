@@ -48,6 +48,9 @@ public final class Game {
         background = BitmapFactory.decodeResource(getResources(), R.drawable.background_texture);
 
         splitInput = split();
+
+        start = new StartNucleotide(this,true);
+        end = new StartNucleotide(this,false);
         generateGamePieces();
     }
 
@@ -210,9 +213,6 @@ public final class Game {
     void generateGamePieces()
     {
         Codon c;
-
-        start = new StartNucleotide(this,true);
-        end = new StartNucleotide(this,false);
 
         c = new Codon(this,"ATG",0);
         start.setX(c.getNucleotides().get(0).getX() - start.getWidth()/2);
