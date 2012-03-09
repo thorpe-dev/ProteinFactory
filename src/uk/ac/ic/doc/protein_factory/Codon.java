@@ -67,7 +67,7 @@ class Codon
     	}
     	
     	// Update score
-    	game.updateCodonScore(state);
+    	game.score.codonCompleted(state);
     	
 		for(DNANucleotide dna : nucleotides) {
 			dna.setState(state);

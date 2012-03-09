@@ -55,7 +55,7 @@ public class Game {
         canvas.drawBitmap(background, 0, 0, paint);
 
         // If the backbone is empty, then the player has successfully strung together all the DNA
-        if (backboneDNA.isEmpty())
+        if (gameOver())
         {
             canvas.drawText("You win",gen.nextInt(screenWidth()),gen.nextInt(screenHeight()),paint);
         }
@@ -72,6 +72,7 @@ public class Game {
                     dna.draw(canvas);
 
             canvas.drawText("Score: "+score.score(), screenWidth() - 280, screenHeight() - 20, paint);
+            canvas.drawText("Lives: " + score.livesLeft(), 10, screenHeight(), paint);
         }
 
     }
@@ -144,10 +145,6 @@ public class Game {
     public int screenWidth() {return c.getResources().getDisplayMetrics().widthPixels; }
     public int screenHeight() { return c.getResources().getDisplayMetrics().heightPixels; }
 
-
-    public void updateCodonScore(State state) {
-
-    }
     
     private Nucleotide closestNucleotide (int x, int y, int maxdist, Collection<? extends Nucleotide> collection)
     {

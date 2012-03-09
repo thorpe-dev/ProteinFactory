@@ -16,8 +16,8 @@ public class DNANucleotide extends Nucleotide {
 	protected String partial_bitmap_filename() { return "_backbone_"; }
 	
     public void wobbleLeft() { x--; }
-    public boolean computeCodonValidity() {
-    	return codon.computeValidity();
+    public void computeCodonValidity() {
+    	codon.computeValidity();
     }
     
     // Called from RNANucleotide's attach()
