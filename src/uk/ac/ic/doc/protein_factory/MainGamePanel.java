@@ -24,6 +24,7 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 
         getHolder().addCallback(this);
         setFocusable(true);
+        setKeepScreenOn(true);
     }
 
     @Override

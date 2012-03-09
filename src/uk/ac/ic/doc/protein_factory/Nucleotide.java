@@ -31,7 +31,6 @@ abstract class Nucleotide {
 	public int getY() { return y; }
 	public char type() { return type; }
 	public boolean attached() { return attached; }
-	public void setAttached(boolean attached) { this.attached = attached; }
 	
     public int getWidth() {
         return bitmap.getWidth();
@@ -52,7 +51,7 @@ abstract class Nucleotide {
         canvas.drawBitmap(bitmap, x - (bitmap.getWidth() / 2), y - (bitmap.getHeight() / 2), null);
     }
     
-    protected void setBitmap(String colour) {
+    protected void setColour(String colour) {
     	this.bitmap = BitmapFactory.decodeResource(game.getResources(),generateNucleotide(colour));
     }
     

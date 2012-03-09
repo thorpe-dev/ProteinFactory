@@ -6,10 +6,10 @@
               android:background="#f4eb8d"
               android:layout_gravity="center">
     <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
             android:gravity="center"
             android:text="@string/instructions"
             android:textColor="#000000"
-        ></TextView>
+        />
 </RelativeLayout>

@@ -2,27 +2,28 @@ package uk.ac.ic.doc.protein_factory;
 
 import java.util.Random;
 
+import uk.ac.ic.doc.protein_factory.Game.State;
+
 public class RNANucleotide extends Nucleotide {
-    //private final static String TAG = RNANucleotide.class.getSimpleName();
     private boolean touched = false;
-    private DNANucleotide attachedTo = null;
-    
-	public RNANucleotide(Game g) {
+    public RNANucleotide(Game g) {
 		this(g, randomType(g.getGen()));
 	}
     
     public RNANucleotide(Game g, char type)
     {
         super(g, type);
+
+        // TODO: Check phone orientation - seems to affect width & height
         this.x = g.getGen().nextInt(g.screenWidth());
-        this.y = g.getGen().nextInt(g.screenHeight()-230) + 180;
-        setBitmap("grey");
+        this.y = g.getGen().nextInt(g.screenHeight() - 150) + 150;
+        setColour("grey");
     }
     
     protected String partial_bitmap_filename() { return "_"; }
 	
 	public void wobbleLeft() {
-		if(attached) {
+		if(attached) {			Game.State state;
 			x--;
 		}
 		else {
@@ -36,31 +37,17 @@ public class RNANucleotide extends Nucleotide {
 	
 	public void attach(DNANucleotide dna)
     {
-		this.attachedTo = dna;
 		this.attached = true;
+		dna.attach(this);
 		
-		Game.State match = game.match(dna, this);
-		
-		switch(match) {
-		case Good:
-			setBitmap("green");
-			dna.setBitmap("green");
-			// Increment score? Or are we just keeping track of "lives"?
-			break;
-		case Acceptable:
-			setBitmap("orange");
-			dna.setBitmap("orange");
-			break;
-		case Bad:
-			setBitmap("red");
-			dna.setBitmap("red");
-			// Decrement score/lives
-			break;
-		default:
-			throw new RuntimeException("Unexpected match value for DNA/RNA: " + match);
+		// If codon isn't complete yet, set our own colours
+		if(!dna.computeCodonValidity()) {
+	        if(dna.matchesPartner()) dna.setState(State.Good);
+	        else dna.setState(State.Bad);
 		}
 
-		dna.setAttached(true);
+
+		
 		
 		// Update score
 	}

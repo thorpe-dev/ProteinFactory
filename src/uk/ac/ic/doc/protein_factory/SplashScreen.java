@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 
 public class SplashScreen extends Activity {
 
@@ -29,6 +28,5 @@ public class SplashScreen extends Activity {
     {
         Intent i = new Intent(SplashScreen.this,InstructionScreen.class);
         SplashScreen.this.startActivity(i);
-
     }
 }
