@@ -1,10 +1,5 @@
 package uk.ac.ic.doc.protein_factory;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-
-@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 public class DNANucleotide extends Nucleotide {
 	private Codon codon = null;
 	private RNANucleotide attachedTo = null;
@@ -22,6 +17,10 @@ public class DNANucleotide extends Nucleotide {
     public void wobbleLeft() { x--; }
     public void computeCodonValidity() {
     	codon.computeValidity();
+    }
+    
+    public void checkCodonForDeletion() {
+    	codon.checkForDeletion();
     }
     
     // Called from RNANucleotide's attach()
@@ -59,4 +58,5 @@ public class DNANucleotide extends Nucleotide {
 		setColour(colour);
 		attachedTo.setColour(colour);
     }
+    
 }

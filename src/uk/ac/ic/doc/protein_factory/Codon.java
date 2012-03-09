@@ -54,6 +54,14 @@ class Codon
     	return true;
     }
     
+    private boolean allOffScreen() {
+    	for(DNANucleotide dna : nucleotides) {
+    		if(!dna.offScreen())
+    			return false;
+    	}
+    	return true;
+    }
+    
     public boolean computeValidity() {
     	Game.State state;
     	
@@ -75,5 +83,11 @@ class Codon
 		}
     	
     	return true;
+    }
+    
+    public void checkForDeletion() {
+    	if(allOffScreen() & !isComplete()) {
+    		game.score.codonDeleted();
+    	}
     }
 }

@@ -10,8 +10,8 @@ import android.view.MotionEvent;
 public final class Game {
 
     private final Collection<RNANucleotide> floatingRNA = Collections.synchronizedList(new LinkedList<RNANucleotide>());
-    private final AbstractSequentialList<DNANucleotide> backboneDNA = new LinkedList<DNANucleotide>();
-    private static final String DNAInput = "gctacaatcaaaaaccatcag";
+    private final LinkedList<DNANucleotide> backboneDNA = new LinkedList<DNANucleotide>();
+    private static final String DNAInput = "atggccctgtggatgcgcttcctgcccctgctggcc";
     private final Vector<String> splitInput;
 
     private static final int TOUCH_ACCURACY = 50; // px
@@ -25,7 +25,7 @@ public final class Game {
     public static final CodonGroups codonGroups = new CodonGroups(); 
     private final Context c;
 
-    private final Paint paint = new Paint();
+    private final Paint inGamePaint = new Paint();
     private final Bitmap background;
 
     public Score score = new Score();
@@ -41,8 +41,10 @@ public final class Game {
     public Game(Context c) {
         this.c = c;
 
-        paint.setColor(Color.BLACK);
-        paint.setTextSize(64);
+        assert(DNAInput.length()%3==0);
+        
+        inGamePaint.setColor(Color.BLACK);
+        inGamePaint.setTextSize(64);
         background = BitmapFactory.decodeResource(getResources(), R.drawable.background_texture);
 
         splitInput = split();
@@ -52,35 +54,25 @@ public final class Game {
     /* Called regularly by main loop */
     public void drawToCanvas(Canvas canvas)
     {
-        canvas.drawBitmap(background, 0, 0, paint);
+        canvas.drawBitmap(background, 0, 0, null);
 
-        // If the backbone is empty, then the player has successfully strung together all the DNA
-        if (gameOver())
-        {
-            canvas.drawText("You win",gen.nextInt(screenWidth()),gen.nextInt(screenHeight()),paint);
-        }
+		synchronized(floatingRNA) {
+        	for (RNANucleotide rna : floatingRNA)
+        	    rna.draw(canvas);
+		}
 
-        else
-        {
-			synchronized(floatingRNA) {
-            	for (RNANucleotide rna : floatingRNA)
-            	    rna.draw(canvas);
-			}
+        for (DNANucleotide dna : backboneDNA)
+            if (dna.getX() - dna.getWidth() < screenWidth())
+                dna.draw(canvas);
+        
+        if ((start.getX() - start.getWidth() < screenWidth()) || !start.isNoLongerRender())
+            start.draw(canvas);
+        
+        if (end.getX() - end.getWidth() < screenWidth())
+            end.draw(canvas);
 
-            for (DNANucleotide dna : backboneDNA)
-                if (dna.getX() - dna.getWidth() < screenWidth())
-                    dna.draw(canvas);
-            
-            if ((start.getX() - start.getWidth() < screenWidth()) || !start.isNoLongerRender())
-                start.draw(canvas);
-            
-            if (end.getX() - end.getWidth() < screenWidth())
-                end.draw(canvas);
-            
-
-            canvas.drawText("Score: "+score.score(), screenWidth() - 280, screenHeight() - 20, paint);
-            canvas.drawText("Lives: " + score.livesLeft(), 10, screenHeight(), paint);
-        }
+        canvas.drawText("Score: "+score.score(), screenWidth() - 270, screenHeight() - 10, inGamePaint);
+        canvas.drawText("Lives: " + score.livesLeft(), 10, screenHeight()-10, inGamePaint);
 
     }
 
@@ -88,7 +80,6 @@ public final class Game {
     public void physics()
     {
         RNANucleotide rna;
-        DNANucleotide dna;
         synchronized(floatingRNA) {
 	        for (Iterator<RNANucleotide> i = floatingRNA.iterator(); i.hasNext();)
 	        {
@@ -107,15 +98,14 @@ public final class Game {
 	        }
         }
 
+        DNANucleotide dna;
         for (Iterator<DNANucleotide> i = backboneDNA.iterator(); i.hasNext();)
         {
             dna = i.next();
             dna.wobbleLeft();
-            if ((dna.getX() + dna.getWidth() / 2) < 0)
-            {
-                i.remove();
-                // If we have time, change this so backbone elements get reused
-                // dna.setX(backboneDNA.getLast().getX() + backboneDNA.getLast().getWidth() / 2);
+            if (dna.offScreen()) {
+            	dna.checkCodonForDeletion();
+            	i.remove();
             }
         }
         start.setNoLongerRender((start.getX() + start.getWidth() /2) < 0);
@@ -150,6 +140,26 @@ public final class Game {
 	            }
 	        }
 	    }
+    }
+    
+    // Called once at the end of the game
+    public void drawScores(Canvas canvas) {
+    	Paint paint = new Paint();
+    	paint.setTextSize(32);
+    	canvas.drawBitmap(background, 0, 0, null);
+    	// green Correct codons
+    	// orange Silent mutations
+    	// red Missense mutations
+    	// Deletions
+    	
+    	paint.setColor(Color.rgb(50, 50, 50));
+    	canvas.drawText("Game Over!", screenWidth()/3, screenHeight()/9, paint);
+    	canvas.drawText("Correct codons: " + score.goodCodons(), screenWidth()/3, 3*screenHeight()/9, paint);
+    	canvas.drawText("Silent mutations: " + score.silentMutations(), screenWidth()/3, 4*screenHeight()/9, paint);
+    	canvas.drawText("Missense mutations: " + score.missenseMutations(), screenWidth()/3, 5*screenHeight()/9, paint);
+    	canvas.drawText("Deletions: " + score.deletions(), screenWidth()/3, 6*screenHeight()/9, paint);
+        canvas.drawText("Score: " + score.score(), screenWidth()/3, 7*screenHeight()/9, paint);
+        canvas.drawText("Lives: " + score.livesLeft(), screenWidth()/3, 8*screenHeight()/9, paint);
     }
 
     public int screenWidth() {return c.getResources().getDisplayMetrics().widthPixels; }
@@ -200,7 +210,6 @@ public final class Game {
     void generateGamePieces()
     {
         Codon c;
-        int i;
 
         start = new StartNucleotide(this,true);
         end = new StartNucleotide(this,false);
@@ -208,7 +217,7 @@ public final class Game {
         c = new Codon(this,"ATG",0);
         start.setX(c.getNucleotides().get(0).getX() - start.getWidth()/2);
         backboneDNA.addAll(c.getNucleotides());
-        for (i = 0; i < splitInput.size();i++)
+        for (int i = 0; i < splitInput.size();i++)
         {
             c = new Codon(this,splitInput.get(i),(i*3) + 3);
             backboneDNA.addAll(c.getNucleotides());
@@ -229,17 +238,16 @@ public final class Game {
                 break;
         }
 
-        c = new Codon(this,endSequence,i*3+3);
+        c = new Codon(this,endSequence,splitInput.size()*3+3);
         
         end.setX(c.getNucleotides().getLast().getX() + end.getWidth()/2);
 
-        for (DNANucleotide dna : backboneDNA)
+        for (int i=0;i<10;i++)
         {
         	synchronized(floatingRNA) {
-	        	// Generate an RNA piece corresponding to each DNA piece
-	        	floatingRNA.add(new RNANucleotide(this,dnaToRNA(dna.type())));
-            }
-            
+	        	// And also some random ones
+	            floatingRNA.add(new RNANucleotide(this));
+        	}
         }
     }
 
@@ -268,7 +276,7 @@ public final class Game {
     	return rnaCodon;
     }
     
-    private boolean gameOver() {
+    public boolean gameOver() {
     	if(score.livesLeft() <= 0)
     		return true;
     	

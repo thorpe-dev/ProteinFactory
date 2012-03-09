@@ -32,15 +32,21 @@ class MainThread extends Thread {
                 canvas = holder.lockCanvas();
                 if(canvas != null) {
 	                synchronized (holder) {
-	                    this.game.physics();
-	                    this.game.drawToCanvas(canvas);
-	                    long thisLoopDuration = SystemClock.uptimeMillis()-startTime;
-	                    Log.v(TAG,"Loop took " + thisLoopDuration + "ms");
-	                    long timeToSleep = LOOPTIME-thisLoopDuration;
-	                    if(timeToSleep > 0) {
-	                    	try { Thread.sleep(timeToSleep); }
-	                    	catch (InterruptedException iex) {/* Do we need to do anything here? */ }
-	                    }
+	                	if(this.game.gameOver()) {
+	                		game.drawScores(canvas);
+	                		this.running = false;
+	                	}
+	                	else {
+		                    this.game.physics();
+		                    this.game.drawToCanvas(canvas);
+		                    long thisLoopDuration = SystemClock.uptimeMillis()-startTime;
+		                    Log.v(TAG,"Loop took " + thisLoopDuration + "ms");
+		                    long timeToSleep = LOOPTIME-thisLoopDuration;
+		                    if(timeToSleep > 0) {
+		                    	try { Thread.sleep(timeToSleep); }
+		                    	catch (InterruptedException iex) {/* Do we need to do anything here? */ }
+		                    }
+	                	}
 	                }
                 }
             }
@@ -49,6 +55,6 @@ class MainThread extends Thread {
                     holder.unlockCanvasAndPost(canvas);
             }
         }
-        Log.d(TAG,"Game loop exceeded limits");
+        Log.d(TAG,"Game over");
     }
 }

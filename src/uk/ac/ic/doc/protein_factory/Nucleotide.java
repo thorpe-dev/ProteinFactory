@@ -68,4 +68,9 @@ abstract class Nucleotide {
             return R.drawable.dna_helix_icon;
         }
     }
+    
+    // Has this Nucleotide gone off-screen to the left?
+    public boolean offScreen() {
+    	return ((x + this.getWidth()/2) < 0);
+    }
 }
