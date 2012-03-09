@@ -14,7 +14,7 @@ public class Game {
     private final Collection<RNANucleotide> unusedRNA = new Stack<RNANucleotide>();
     private final LinkedList<DNANucleotide> backboneDNA = new LinkedList<DNANucleotide>();
     private final LinkedList<Codon> codons = new LinkedList<Codon>();
-    private static final String DNAInput = "gctacaatcaaaaaccatcag";
+    private static final String DNAInput = "atggccctgtggatgcgcttcctgcccctgctggccctgctcttcctctgggag";
     private final Vector<String> splitInput;
 
     private static final int TOUCH_ACCURACY = 50; // px
@@ -41,6 +41,8 @@ public class Game {
     public Game(Context c) {
         this.c = c;
 
+        assert(DNAInput.length()%3==0);
+        
         paint.setColor(Color.BLACK);
         paint.setTextSize(64);
         background = BitmapFactory.decodeResource(getResources(), R.drawable.background_texture);
@@ -71,8 +73,8 @@ public class Game {
                 if (dna.getX() - 50 < screenWidth())
                     dna.draw(canvas);
 
-            canvas.drawText("Score: "+score.score(), screenWidth() - 280, screenHeight() - 20, paint);
-            canvas.drawText("Lives: " + score.livesLeft(), 10, screenHeight(), paint);
+            canvas.drawText("Score: "+score.score(), screenWidth() - 270, screenHeight() - 10, paint);
+            canvas.drawText("Lives: " + score.livesLeft(), 10, screenHeight()-10, paint);
         }
 
     }
@@ -196,11 +198,6 @@ public class Game {
             c = new Codon(this,splitInput.get(i),i*3);
             codons.add(c);
             backboneDNA.addAll(c.getNucleotides());
-        }
-
-        for (DNANucleotide d:backboneDNA)
-        {
-            Log.d(TAG, ""+d.getX());
         }
 
         for (DNANucleotide dna : backboneDNA)

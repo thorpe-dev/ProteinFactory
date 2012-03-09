@@ -1,5 +1,7 @@
 package uk.ac.ic.doc.protein_factory;
 
+import android.graphics.Canvas;
+
 public class DNANucleotide extends Nucleotide {
     //private final static String TAG = DNANucleotide.class.getSimpleName();
 	private Codon codon = null;
@@ -55,4 +57,5 @@ public class DNANucleotide extends Nucleotide {
 		setColour(colour);
 		attachedTo.setColour(colour);
     }
+    
 }
