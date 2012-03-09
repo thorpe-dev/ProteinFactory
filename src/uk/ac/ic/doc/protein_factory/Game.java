@@ -11,9 +11,7 @@ import android.view.MotionEvent;
 public class Game {
 
     private final Collection<RNANucleotide> floatingRNA = Collections.synchronizedList(new LinkedList<RNANucleotide>());
-    private final Collection<RNANucleotide> unusedRNA = new Stack<RNANucleotide>();
     private final LinkedList<DNANucleotide> backboneDNA = new LinkedList<DNANucleotide>();
-    private final LinkedList<Codon> codons = new LinkedList<Codon>();
     private static final String DNAInput = "gctacaatcaaaaaccatcag";
     private final Vector<String> splitInput;
 
@@ -28,13 +26,13 @@ public class Game {
     private final Paint paint = new Paint();
     private final Bitmap background;
     
-    private int score;
+    private final int score;
 
     public Random getGen() { return gen; }
     public Resources getResources() { return c.getResources(); }
 
 
-    public static enum State { Good, Acceptable, Bad, None }
+    public static enum State { Good, Acceptable, Bad }
 
     private static final String TAG = Game.class.getSimpleName();
 
@@ -92,7 +90,6 @@ public class Game {
 	                if (rna.getX() + (rna.getWidth() / 2) < 0)
 	                {
 	                	if(rna.attached()) {
-	                		unusedRNA.add(rna);
 	                		i.remove();
 	                	}
 	                	else
@@ -190,18 +187,32 @@ public class Game {
     void generateGamePieces()
     {
         Codon c;
+        int i;
 
-        for (int i = 0; i < splitInput.size();i++)
+        c = new Codon(this,"ATG",0);
+        backboneDNA.addAll(c.getNucleotides());
+        for (i = 0; i < splitInput.size();i++)
         {
-            c = new Codon(this,splitInput.get(i),i*3);
-            codons.add(c);
+            c = new Codon(this,splitInput.get(i),i*3 + 3);
             backboneDNA.addAll(c.getNucleotides());
         }
-
-        for (DNANucleotide d:backboneDNA)
+        
+        int end = gen.nextInt(3);
+        String endSequence;
+        switch (end)
         {
-            Log.d(TAG, ""+d.getX());
+            case 0:
+                endSequence = "TAA";
+                break;
+            case 1:
+                endSequence = "TAG";
+                break;
+            default:
+                endSequence = "TGA";
+                break;
         }
+
+        c = new Codon(this,endSequence,0);
 
         for (DNANucleotide dna : backboneDNA)
         {

@@ -23,7 +23,7 @@ public class RNANucleotide extends Nucleotide {
     protected String partial_bitmap_filename() { return "_"; }
 	
 	public void wobbleLeft() {
-		if(attached) {			Game.State state;
+		if(attached) {
 			x--;
 		}
 		else {

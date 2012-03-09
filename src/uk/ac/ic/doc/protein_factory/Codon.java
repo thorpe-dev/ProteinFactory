@@ -3,15 +3,14 @@ package uk.ac.ic.doc.protein_factory;
 
 import java.util.LinkedList;
 
+@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 class Codon
 {
     public LinkedList<DNANucleotide> getNucleotides() { return nucleotides; }
-    private LinkedList<DNANucleotide> nucleotides = new LinkedList<DNANucleotide>();
-    private Game game;
+    private final LinkedList<DNANucleotide> nucleotides = new LinkedList<DNANucleotide>();
 
     public Codon(Game g,String s, int pos)
     {
-    	this.game = g;
         assert (s.length() == 3);
         for (int i = 0; i < s.length(); i++)
         {

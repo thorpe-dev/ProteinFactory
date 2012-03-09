@@ -1,11 +1,19 @@
 package uk.ac.ic.doc.protein_factory;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+
+@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 public class DNANucleotide extends Nucleotide {
     //private final static String TAG = DNANucleotide.class.getSimpleName();
+    private static enum Terminal { Start, Middle, End }
 	private Codon codon = null;
 	private RNANucleotide attachedTo = null;
 
-	public DNANucleotide(Game g, Codon codon, char type, int i) {
+    private Terminal terminal;
+
+	public DNANucleotide(Game g, Codon codon, char type, int i,boolean startOrEnd) {
         super(g, type);
         setColour("grey");
         this.y = this.bitmap.getHeight() / 2;
@@ -14,7 +22,7 @@ public class DNANucleotide extends Nucleotide {
     }
 
 	protected String partial_bitmap_filename() { return "_backbone_"; }
-	
+
     public void wobbleLeft() { x--; }
     public boolean computeCodonValidity() {
     	return codon.computeValidity();
@@ -55,4 +63,14 @@ public class DNANucleotide extends Nucleotide {
 		setColour(colour);
 		attachedTo.setColour(colour);
     }
+
+    public void draw(Canvas canvas) {
+        canvas.drawBitmap(bitmap, x - (bitmap.getWidth() / 2), y - (bitmap.getHeight() / 2), null);
+        switch (this.terminal)
+        {
+            case Start:
+
+        }
+    }
+
 }

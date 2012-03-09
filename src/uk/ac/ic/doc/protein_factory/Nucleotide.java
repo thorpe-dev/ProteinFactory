@@ -15,7 +15,7 @@ abstract class Nucleotide {
     int x;
     int y; // X and Y Co-ordinates of the image
     final Game game;
-    char type;
+    final char type;
     protected boolean attached = false;
     
     Nucleotide(Game g, char type) {
