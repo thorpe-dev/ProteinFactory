@@ -3,7 +3,6 @@ package uk.ac.ic.doc.protein_factory;
 
 import java.util.LinkedList;
 
-@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 class Codon
 {
     public LinkedList<DNANucleotide> getNucleotides() { return nucleotides; }

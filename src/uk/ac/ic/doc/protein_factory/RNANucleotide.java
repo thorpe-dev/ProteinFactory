@@ -14,7 +14,6 @@ public class RNANucleotide extends Nucleotide {
     {
         super(g, type);
 
-        // TODO: Check phone orientation - seems to affect width & height
         this.x = g.getGen().nextInt(g.screenWidth());
         this.y = g.getGen().nextInt(g.screenHeight() - 200) + 150;
         setColour("grey");
