@@ -16,19 +16,23 @@ public class Score {
 		default: throw new RuntimeException("Unexpected Game.State: " + state);
 		}
 	}
+
+	public void codonDeleted() {
+		deletions++;
+	}
 	
 	public void baseCompleted(Game.State match) {
 		if(match == Game.State.Good) score++;
 	}
-	
-	public int livesLeft() {
-		return (initialLives - (deletions + missenseMutations));
-	}
-	
+
 	public void basePairMatch(Game.State match) {
 		if(match == Game.State.Good) {
 			score++;
 		}
+	}
+	
+	public int livesLeft() {
+		return (initialLives - (deletions + missenseMutations));
 	}
 	
 	public int score() {

@@ -3,15 +3,16 @@ package uk.ac.ic.doc.protein_factory;
 
 import java.util.LinkedList;
 
+@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 class Codon
 {
     public LinkedList<DNANucleotide> getNucleotides() { return nucleotides; }
-    private LinkedList<DNANucleotide> nucleotides = new LinkedList<DNANucleotide>();
-    private Game game;
+    private final LinkedList<DNANucleotide> nucleotides = new LinkedList<DNANucleotide>();
+    private final Game game;
 
     public Codon(Game g,String s, int pos)
     {
-    	this.game = g;
+        this.game = g;
         assert (s.length() == 3);
         for (int i = 0; i < s.length(); i++)
         {
@@ -53,6 +54,14 @@ class Codon
     	return true;
     }
     
+    private boolean allOffScreen() {
+    	for(DNANucleotide dna : nucleotides) {
+    		if(!dna.offScreen())
+    			return false;
+    	}
+    	return true;
+    }
+    
     public boolean computeValidity() {
     	Game.State state;
     	
@@ -74,5 +83,11 @@ class Codon
 		}
     	
     	return true;
+    }
+    
+    public void checkForDeletion() {
+    	if(allOffScreen() & !isComplete()) {
+    		game.score.codonDeleted();
+    	}
     }
 }

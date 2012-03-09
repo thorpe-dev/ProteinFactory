@@ -15,7 +15,7 @@ abstract class Nucleotide {
     int x;
     int y; // X and Y Co-ordinates of the image
     final Game game;
-    char type;
+    final char type;
     protected boolean attached = false;
     
     Nucleotide(Game g, char type) {
@@ -67,5 +67,10 @@ abstract class Nucleotide {
             Log.e(TAG,"Exception message is: " + e.getMessage());
             return R.drawable.dna_helix_icon;
         }
+    }
+    
+    // Has this Nucleotide gone off-screen to the left?
+    public boolean offScreen() {
+    	return ((x + this.getWidth()/2) < 0);
     }
 }

@@ -71,4 +71,8 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
     	game.touch(e);
         return true;
     }
+    
+    public void gameOver(Score score) {
+    	
+    }
 }

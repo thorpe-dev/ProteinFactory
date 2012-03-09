@@ -17,8 +17,8 @@ public class CodonGroups {
     	STOP
     }
     
-	private Map<String, AminoAcid> codonsToAminoAcids = new HashMap<String, AminoAcid>(100);
-	private Map<AminoAcid, Collection<String>> aminoAcidsToCodons = new EnumMap<AminoAcid, Collection<String>>(AminoAcid.class);
+	private final Map<String, AminoAcid> codonsToAminoAcids = new HashMap<String, AminoAcid>(100);
+	private final Map<AminoAcid, Collection<String>> aminoAcidsToCodons = new EnumMap<AminoAcid, Collection<String>>(AminoAcid.class);
 	
 	// ALWAYS ALWAYS MUST COMPARE RNA
 	public boolean sameGroup(String a, String b) {

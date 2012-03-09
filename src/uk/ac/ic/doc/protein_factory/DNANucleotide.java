@@ -1,9 +1,6 @@
 package uk.ac.ic.doc.protein_factory;
 
-import android.graphics.Canvas;
-
 public class DNANucleotide extends Nucleotide {
-    //private final static String TAG = DNANucleotide.class.getSimpleName();
 	private Codon codon = null;
 	private RNANucleotide attachedTo = null;
 
@@ -16,10 +13,14 @@ public class DNANucleotide extends Nucleotide {
     }
 
 	protected String partial_bitmap_filename() { return "_backbone_"; }
-	
+
     public void wobbleLeft() { x--; }
     public void computeCodonValidity() {
     	codon.computeValidity();
+    }
+    
+    public void checkCodonForDeletion() {
+    	codon.checkForDeletion();
     }
     
     // Called from RNANucleotide's attach()
