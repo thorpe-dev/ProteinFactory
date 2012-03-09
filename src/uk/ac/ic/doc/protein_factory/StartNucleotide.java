@@ -17,6 +17,7 @@ public class StartNucleotide extends Nucleotide {
     {
         super(g,'q');
         this.start=start;
+        setColour(getTerminal());
     }
 
     public void wobbleLeft()

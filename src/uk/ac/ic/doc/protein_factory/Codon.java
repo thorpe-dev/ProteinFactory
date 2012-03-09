@@ -8,9 +8,11 @@ class Codon
 {
     public LinkedList<DNANucleotide> getNucleotides() { return nucleotides; }
     private final LinkedList<DNANucleotide> nucleotides = new LinkedList<DNANucleotide>();
+    private final Game game;
 
     public Codon(Game g,String s, int pos)
     {
+        this.game = g;
         assert (s.length() == 3);
         for (int i = 0; i < s.length(); i++)
         {
